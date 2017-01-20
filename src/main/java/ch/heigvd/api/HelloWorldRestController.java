@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class HelloWorldRestController {
 
 
-
     //-------------------Retrieve All Users--------------------------------------------------------
 
     @RequestMapping(value = "/test/", method = RequestMethod.GET)
