@@ -1,1 +1,0 @@
-# HEIG-AMT-Gamification
