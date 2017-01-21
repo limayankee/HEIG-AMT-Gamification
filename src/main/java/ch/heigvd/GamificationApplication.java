@@ -8,10 +8,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import springfox.documentation.swagger.web.SecurityConfiguration;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
 @Import({ SecurityConfiguration.class })
 @SpringBootApplication
+@EnableSwagger2
 public class GamificationApplication {
 
 	@Autowired
