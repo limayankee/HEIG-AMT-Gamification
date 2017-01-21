@@ -1,7 +1,6 @@
 package ch.heigvd.models;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 @Entity
 @Table(name = "users_badges")
@@ -13,7 +12,7 @@ public class UserBadge {
 	@EmbeddedId
 	private UserBadgeId pk = new UserBadgeId();
 
-	@Column(name = "count")
+	@Column(name = "count", nullable = false)
 	private int count;
 
 	public UserBadgeId getPk() {
@@ -32,27 +31,4 @@ public class UserBadge {
 		this.count = count;
 	}
 
-
-	class UserBadgeId implements Serializable {
-		@ManyToOne
-		private User user;
-		@ManyToOne
-		private Badge badge;
-
-		public User getUser() {
-			return user;
-		}
-
-		public void setUser(User user) {
-			this.user = user;
-		}
-
-		public Badge getBadge() {
-			return badge;
-		}
-
-		public void setBadge(Badge badge) {
-			this.badge = badge;
-		}
-	}
 }
