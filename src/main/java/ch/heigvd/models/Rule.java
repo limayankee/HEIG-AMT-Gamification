@@ -19,6 +19,21 @@ public class Rule {
 	@Column(name = "expr", nullable = false)
 	private String expr;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "application_id", nullable = false)
+	private Application application;
+
+	public Rule(){
+
+	}
+
+	public Rule(String name, String eventType, String expr, Application application){
+		this.name = name;
+		this.eventType = eventType;
+		this.expr = expr;
+		this.application = application;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -49,5 +64,9 @@ public class Rule {
 
 	public void setExpr(String expr) {
 		this.expr = expr;
+	}
+
+	public Application getApplication(){
+		return application;
 	}
 }
