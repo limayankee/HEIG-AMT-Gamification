@@ -15,4 +15,7 @@ public class User
     @Id
     @Column(name = "id")
     private int id;
+
+    @Column(name = "application_user_id")
+    private String applicationUserId;
 }
