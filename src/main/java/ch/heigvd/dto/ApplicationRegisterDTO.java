@@ -5,7 +5,7 @@ import ch.heigvd.models.Application;
 /**
  * @author jfleroy
  */
-public class ApplicationDTOIn
+public class ApplicationRegisterDTO
 {
     public String name;
 

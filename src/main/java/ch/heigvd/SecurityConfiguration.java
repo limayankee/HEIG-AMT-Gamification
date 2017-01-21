@@ -11,6 +11,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
+import javax.sql.DataSource;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
@@ -18,8 +20,22 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static String REALM="AMT-GameCat";
 
     @Autowired
+    DataSource dataSource;
+
+    @Autowired
+    public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+
+        auth.jdbcAuthentication().dataSource(dataSource)
+            .usersByUsernameQuery(
+                    "select username,password, enabled from users where username=?")
+            .authoritiesByUsernameQuery(
+                    "select username, role from user_roles where username=?");
+    }
+
+    @Autowired
     public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication().withUser("bill").password("abc123").roles("APPLICATION");
+        //auth.jdbcAuthentication().dataSource(dataSource);
     }
 
     @Override
