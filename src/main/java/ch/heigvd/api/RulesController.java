@@ -1,6 +1,7 @@
 package ch.heigvd.api;
 
 import ch.heigvd.Exception.ConflictException;
+import ch.heigvd.Exception.NotFoundException;
 import ch.heigvd.dao.RuleRepository;
 import ch.heigvd.dto.RuleDTO;
 import ch.heigvd.models.Application;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/rules")
-public class Rules
+public class RulesController
 {
     @Autowired
     private RuleRepository ruleRepository;
@@ -44,5 +45,38 @@ public class Rules
         ruleRepository.save(rule);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @RequestMapping(method = RequestMethod.PATCH)
+    public ResponseEntity editRule(@Valid @RequestBody RuleDTO input, @RequestAttribute("application") Application app) {
+
+        Rule rule = ruleRepository.findByNameAndApplication(input.getName(), app);
+
+        if(rule == null){
+            throw new NotFoundException("Rule do not exists");
+        }
+
+        rule = new Rule(input.getName(), input.getEventType(), input.getExpr(), app);
+
+        rule.setName(input.getName());
+        rule.setEventType(input.getEventType());
+        rule.setExpr(input.getExpr());
+
+        ruleRepository.save(rule);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{name}")
+    public ResponseEntity deleteRule(@PathVariable String name, @RequestAttribute("application") Application app) {
+        Rule rule = ruleRepository.findByNameAndApplication(name, app);
+
+        if(rule == null){
+            throw new NotFoundException("Rule do not exists");
+        }
+
+        ruleRepository.delete(rule);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
