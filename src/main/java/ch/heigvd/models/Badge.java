@@ -11,17 +11,29 @@ public class Badge {
 	@Column(name = "id", nullable = false, unique = true)
 	private int id;
 
+	@ManyToOne(cascade = CascadeType.ALL)
+	private Application application; // to whom application it belongs
+
 	@Column(name = "name", nullable = false)
 	private String name;
 
 	@Column(name = "image", nullable = false)
 	private String image;
 
-	@Column(name = "count")
-	private int count;
+	@Column(name = "points", nullable = false)
+	private int points;
 
 	@Column(name = "repeatable", nullable = false)
 	private boolean repeatable;
+
+	public Badge(String name, String image, int points, boolean repeatable, Application application)
+	{
+		this.name = name;
+		this.image = image;
+		this.points = points;
+		this.repeatable = repeatable;
+		this.application = application;
+	}
 
 	public int getId() {
 		return id;
@@ -47,12 +59,12 @@ public class Badge {
 		this.image = image;
 	}
 
-	public int getCount() {
-		return count;
+	public int getPoints() {
+		return points;
 	}
 
-	public void setCount(int count) {
-		this.count = count;
+	public void setPoints(int count) {
+		this.points = count;
 	}
 
 	public boolean isRepeatable() {
@@ -61,5 +73,15 @@ public class Badge {
 
 	public void setRepeatable(boolean repeatable) {
 		this.repeatable = repeatable;
+	}
+
+	public Application getApplication()
+	{
+		return application;
+	}
+
+	public void setApplication(Application application)
+	{
+		this.application = application;
 	}
 }
