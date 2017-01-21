@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/events", consumes = "application/json")
-public class Event {
+public class EventController
+{
 
 	@Autowired
 	private UserRepository userRepository;

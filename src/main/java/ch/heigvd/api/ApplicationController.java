@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
  */
 
 @RestController
-@RequestMapping("/register")
+@RequestMapping("/applications")
 @Api(value = "auth", description = "the auth API")
-public class Register
+public class ApplicationController
 {
     @Autowired
     private ApplicationRepository applicationRepository;
@@ -42,7 +42,7 @@ public class Register
 
     @RequestMapping(produces = {"application/json"}, method = RequestMethod.POST)
     @ApiParam(value = "The information of the new application", required = true)
-    public ApplicationDTO add(@RequestBody ApplicationRegisterDTO input) {
+    public ApplicationDTO post(@RequestBody ApplicationRegisterDTO input) {
         Application app = applicationRepository.findByName(input.name);
         if(app != null){
             throw new ConflictException("Application already registered");

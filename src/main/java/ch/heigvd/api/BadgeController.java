@@ -8,10 +8,7 @@ import ch.heigvd.models.Application;
 import ch.heigvd.models.Badge;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author jfleroy
@@ -19,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/badges")
 @Api(value = "Badges", description = "CRUD on the badges")
-public class Badges
+public class BadgeController
 {
     @Autowired
     BadgeRepository badgeRepository;
@@ -27,9 +24,9 @@ public class Badges
     ApplicationRepository applicationRepository;
 
    @RequestMapping(produces = {"application/json"}, method = RequestMethod.POST)
-    public void post(@RequestBody BadgeDTO input){
-       Badge badge = badgeRepository.findByNameAndApplicationId(input.getName(), 8);
-       Application application = applicationRepository.findById(8);
+    public void post(@RequestAttribute("application") Application app, @RequestBody BadgeDTO input){
+       Badge badge = badgeRepository.findByNameAndApplicationId(input.getName(), app.getId());
+       Application application = applicationRepository.findById(app.getId());
 
        if (badge != null) {
            throw new ConflictException("Badge allready existe");
