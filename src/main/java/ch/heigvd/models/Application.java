@@ -36,6 +36,10 @@ public class Application {
         return id;
     }
 
+    public boolean isEnabled(){
+        return enabled;
+    }
+
     public String getName(){
         return name;
     }
