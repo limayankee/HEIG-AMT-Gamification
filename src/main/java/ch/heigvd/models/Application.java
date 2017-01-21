@@ -32,4 +32,16 @@ public class Application {
 		this.role = "APPLICATION";
 	}
 
+    public int getId(){
+        return id;
+    }
+
+    public String getName(){
+        return name;
+    }
+
+    public String getRole(){
+        return role;
+    }
+
 }
