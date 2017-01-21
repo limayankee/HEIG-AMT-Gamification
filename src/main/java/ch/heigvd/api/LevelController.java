@@ -2,10 +2,10 @@ package ch.heigvd.api;
 
 import ch.heigvd.Exception.ConflictException;
 import ch.heigvd.Exception.NotFoundException;
-import ch.heigvd.dao.RuleRepository;
-import ch.heigvd.dto.RuleDTO;
+import ch.heigvd.dao.LevelRepository;
+import ch.heigvd.dto.LevelDTO;
 import ch.heigvd.models.Application;
-import ch.heigvd.models.Rule;
+import ch.heigvd.models.Level;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -24,30 +24,30 @@ import java.util.stream.Collectors;
  */
 
 @RestController
-@RequestMapping(value = "/rules", consumes = "application/json")
-@Api(value = "Rules", description = "CRUD on the rules")
-public class RuleController
+@RequestMapping(value = "/levels", consumes = "application/json")
+@Api(value = "Levels", description = "CRUD on the levels")
+public class LevelController
 {
     @Autowired
-    private RuleRepository ruleRepository;
+    private LevelRepository levelRepository;
 
-    @ApiOperation(value = "Retrive all rules for current application.")
+    @ApiOperation(value = "Retrive all levels for current application.")
 
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
                     message = "Successful operation.",
-                    response = RuleDTO.class,
+                    response = LevelDTO.class,
                     responseContainer = "List"
             )
     })
 
     @RequestMapping(produces = {"application/json"}, method = RequestMethod.GET)
-    public List<RuleDTO> getRules(@RequestAttribute("application") Application app) {
-        return ruleRepository.findByApplication(app).stream().map(RuleDTO::fromRule).collect(Collectors.toList());
+    public List<LevelDTO> getLevels(@RequestAttribute("application") Application app) {
+        return levelRepository.findByApplication(app).stream().map(LevelDTO::fromLevel).collect(Collectors.toList());
     }
 
-    @ApiOperation(value = "Create a rule.")
+    @ApiOperation(value = "Create a level.")
 
     @ApiResponses(value = {
             @ApiResponse(
@@ -62,28 +62,29 @@ public class RuleController
             ),
             @ApiResponse(
                     code = 409,
-                    message = "Rule already exists",
+                    message = "Level already exists",
                     response = Void.class
             )
     })
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity addRule(@RequestAttribute("application") Application app, @Valid @RequestBody RuleDTO input) {
+    public ResponseEntity addLevel(@RequestAttribute("application") Application app, @Valid @RequestBody LevelDTO
+            input) {
 
-        Rule rule = ruleRepository.findByNameAndApplication(input.getName(), app);
+        Level level = levelRepository.findByNameAndApplication(input.getName(), app);
 
-        if(rule != null){
-            throw new ConflictException("Rule already exists");
+        if(level != null){
+            throw new ConflictException("Level already exists");
         }
 
-        rule = new Rule(input.getName(), input.getEventType(), input.getExpr(), app);
+        level = new Level(input.getName(), input.getThreshold(), app);
 
-        ruleRepository.save(rule);
+        levelRepository.save(level);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @ApiOperation(value = "Updates a specific rule.")
+    @ApiOperation(value = "Updates a specific level.")
 
     @ApiResponses(value = {
             @ApiResponse(
@@ -93,7 +94,7 @@ public class RuleController
             ),
             @ApiResponse(
                     code = 404,
-                    message = "Rule do not exist",
+                    message = "Level do not exist",
                     response = Void.class
             ),
             @ApiResponse(
@@ -104,31 +105,30 @@ public class RuleController
     })
 
     @RequestMapping(method = RequestMethod.PATCH, value = "/{name}")
-    public ResponseEntity editRule(@RequestAttribute("application") Application app, @Valid @RequestBody RuleDTO input,
+    public ResponseEntity editLevel(@RequestAttribute("application") Application app, @Valid @RequestBody LevelDTO input,
                                    @PathVariable("name") String name) {
 
-        Rule rule = ruleRepository.findByNameAndApplication(name, app);
+        Level level = levelRepository.findByNameAndApplication(name, app);
 
-        if(rule == null){
-            throw new NotFoundException("Rule do not exist");
+        if(level == null){
+            throw new NotFoundException("Level do not exist");
         }
 
-        Rule rulCmp = ruleRepository.findByNameAndApplication(input.getName(), app);
+        Level levelCmp = levelRepository.findByNameAndApplication(input.getName(), app);
 
-        if(rulCmp != null && rule.getId() != rulCmp.getId()){
-            throw new ConflictException("Rule name already used");
+        if(levelCmp != null && level.getId() != levelCmp.getId()){
+            throw new ConflictException("Level name already used");
         }
 
-        rule.setName(input.getName());
-        rule.setEventType(input.getEventType());
-        rule.setExpr(input.getExpr());
+        level.setName(input.getName());
+        level.setThreshold(input.getThreshold());
 
-        ruleRepository.save(rule);
+        levelRepository.save(level);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @ApiOperation(value = "Deletes a specific rule.")
+    @ApiOperation(value = "Deletes a specific level.")
 
     @ApiResponses(value = {
             @ApiResponse(
@@ -138,21 +138,21 @@ public class RuleController
             ),
             @ApiResponse(
                     code = 404,
-                    message = "Rule do not exist",
+                    message = "Level do not exist",
                     response = Void.class
             )
     })
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{name}")
-    public ResponseEntity deleteRule(@RequestAttribute("application") Application app,
+    public ResponseEntity deleteLevel(@RequestAttribute("application") Application app,
                                      @PathVariable("name") String name) {
-        Rule rule = ruleRepository.findByNameAndApplication(name, app);
+        Level level = levelRepository.findByNameAndApplication(name, app);
 
-        if(rule == null){
-            throw new NotFoundException("Rule do not exist");
+        if(level == null){
+            throw new NotFoundException("Level do not exist");
         }
 
-        ruleRepository.delete(rule);
+        levelRepository.delete(level);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

@@ -1,21 +1,40 @@
 package ch.heigvd.dto;
 
-public class LevelDTO {
-	private String name;
-	private int threshold;
+import ch.heigvd.models.Level;
+import org.hibernate.validator.constraints.NotEmpty;
 
-	public LevelDTO() {}
+import javax.validation.constraints.NotNull;
 
-	public LevelDTO(String name, int threshold) {
-		this.name = name;
-		this.threshold = threshold;
-	}
+/**
+ * @author jfleroy
+ */
+public class LevelDTO
+{
+    @NotEmpty
+    private String name;
 
-	public String getName() {
-		return name;
-	}
+    @NotNull
+    private int threshold;
 
-	public int getThreshold() {
-		return threshold;
-	}
+    public LevelDTO(){
+
+    }
+
+    public LevelDTO(String name, int threshold){
+        this.name = name;
+        this.threshold = threshold;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public int getThreshold(){
+        return threshold;
+    }
+
+    public static LevelDTO fromLevel(Level level){
+        return new LevelDTO(level.getName(), level.getThreshold());
+    }
 }

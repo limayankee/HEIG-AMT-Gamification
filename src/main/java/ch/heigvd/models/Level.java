@@ -17,6 +17,20 @@ public class Level {
 	@Column(name = "threshold", nullable = false)
 	private int threshold;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "application_id", nullable = false)
+	private Application application;
+
+	public Level(){
+
+	}
+
+	public Level(String name, int threshold, Application application){
+		this.name = name;
+		this.threshold = threshold;
+		this.application = application;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -39,5 +53,9 @@ public class Level {
 
 	public void setThreshold(int threshold) {
 		this.threshold = threshold;
+	}
+
+	public Application getApplication(){
+		return application;
 	}
 }
