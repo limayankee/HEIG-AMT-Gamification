@@ -20,4 +20,13 @@ public class Application
     @Column(name = "password")
     private String password;
 
+    @Column(name = "name")
+    private String name;
+
+    public Application(){}
+    public Application(String name, String password){
+        this.name = name;
+        this.password = password;
+    }
+
 }
