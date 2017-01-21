@@ -21,6 +21,25 @@ public class BadgeDTO
         return new Badge(name, image, points, repeatable, application);
     }
 
+    public BadgeDTO(String name, String image, int points, boolean repeatable)
+    {
+        this.name = name;
+        this.image = image;
+        this.points = points;
+        this.repeatable = repeatable;
+    }
+
+    public BadgeDTO(Badge badge){
+        this.name = badge.getName();
+        this.image = badge.getImage();
+        this.points = badge.getPoints();
+        this.repeatable = badge.isRepeatable();
+    }
+
+    static public BadgeDTO fromBadgesList(Badge badge){
+        return new BadgeDTO(badge);
+    }
+
     public String getName()
     {
         return name;
