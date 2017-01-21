@@ -19,27 +19,15 @@ public class User {
 	@Column(name = "appUserId")
 	private String appUserId; // userId in application
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, targetEntity = Badge.class)
-	@JoinTable(name = "users_badges", joinColumns = {
-			@JoinColumn(name = "userId", nullable = false, updatable = false)
-	}, inverseJoinColumns = {
-			@JoinColumn(name = "badgeId", nullable = false, updatable = false)
-	})
-	private Set<Badge> badges = new HashSet<Badge>();
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pk.user")
+	private Set<UserBadge> userBadges = new HashSet<UserBadge>();
 
-	public Set<Badge> getBadges() {
-		return badges;
-	}
 
 	public User() {}
 
 	public User(Application application, String appUserId) {
 		this.application = application;
 		this.appUserId = appUserId;
-	}
-
-	public void setBadges(Set<Badge> badges) {
-		this.badges = badges;
 	}
 
 	public int getId() {
@@ -64,5 +52,13 @@ public class User {
 
 	public void setApplication(Application application) {
 		this.application = application;
+	}
+
+	public Set<UserBadge> getUserBadges() {
+		return userBadges;
+	}
+
+	public void setUserBadges(Set<UserBadge> userBadges) {
+		this.userBadges = userBadges;
 	}
 }
