@@ -35,7 +35,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.csrf().disable()
 				.authorizeRequests()
 				.antMatchers(HttpMethod.POST, "/register").permitAll()
-				.antMatchers(HttpMethod.GET, "/swagger-ui.html").permitAll()
+				.antMatchers("/v2/**").permitAll()
+				.antMatchers("/swagger-ui.html").permitAll()
+				.antMatchers("/webjars/**").permitAll()
+				.antMatchers("/swagger-resources/**").permitAll()
 				.antMatchers("/**").hasAuthority("APPLICATION")
 				.and().httpBasic().realmName(REALM).authenticationEntryPoint(getBasicAuthEntryPoint())
 				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);//We don't need sessions to be created.
