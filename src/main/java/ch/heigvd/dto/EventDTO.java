@@ -1,7 +1,12 @@
 package ch.heigvd.dto;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 public class EventDTO {
+	@NotEmpty
 	private String type;
+
+	@NotEmpty
 	private String userId;
 
 	public EventDTO() {}

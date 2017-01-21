@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping(value = "/events", consumes = "application/json")
 public class EventController
@@ -39,7 +41,7 @@ public class EventController
 	})
 	@ApiParam(value = "The information of the new application", required = true)
 	@RequestMapping(method = RequestMethod.POST)
-	EventDTO echoEvent(@RequestBody EventDTO event) {
+	EventDTO echoEvent(@Valid @RequestBody EventDTO event) {
 		System.out.println("Received a new event from " + event.getUserId());
 		int applicationId = 8;
 		User u = userRepository.findByAppUserIdAndApplicationId(event.getUserId(), applicationId);
