@@ -7,7 +7,9 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 public class User {
+
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private int id; // absolute id for this api only
 
@@ -15,7 +17,7 @@ public class User {
 	private Application application; // to whom application it belongs
 
 	@Column(name = "appUserId")
-	private String applicationUserId; // userId in application
+	private String appUserId; // userId in application
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, targetEntity = Badge.class)
 	@JoinTable(name = "users_badges", joinColumns = {
@@ -27,6 +29,13 @@ public class User {
 
 	public Set<Badge> getBadges() {
 		return badges;
+	}
+
+	public User() {}
+
+	public User(Application application, String appUserId) {
+		this.application = application;
+		this.appUserId = appUserId;
 	}
 
 	public void setBadges(Set<Badge> badges) {
@@ -41,12 +50,19 @@ public class User {
 		this.id = id;
 	}
 
-	public String getApplicationUserId() {
-		return applicationUserId;
+	public String getAppUserId() {
+		return appUserId;
 	}
 
-	public void setApplicationUserId(String applicationUserId) {
-		this.applicationUserId = applicationUserId;
+	public void setAppUserId(String appUserId) {
+		this.appUserId = appUserId;
 	}
 
+	public Application getApplication() {
+		return application;
+	}
+
+	public void setApplication(Application application) {
+		this.application = application;
+	}
 }
