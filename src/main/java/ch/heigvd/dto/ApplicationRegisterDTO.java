@@ -8,7 +8,6 @@ import ch.heigvd.models.Application;
 public class ApplicationRegisterDTO
 {
     public String name;
-
     public String password;
 
     public Application buildApplication(){

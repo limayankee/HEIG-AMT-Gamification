@@ -30,22 +30,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.authoritiesByUsernameQuery("select name, role from applications where name=?");
 	}
 
-	@Autowired
-	public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
-		auth.inMemoryAuthentication().withUser("bill").password("abc123").roles("APPLICATION");
-		//auth.jdbcAuthentication().dataSource(dataSource);
-	}
-
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-
 		http.csrf().disable()
 				.authorizeRequests()
 				.antMatchers(HttpMethod.POST, "/register").permitAll()
-				.antMatchers("/**").hasRole("APPLICATION")
+				.antMatchers(HttpMethod.GET, "/swagger-ui.html").permitAll()
+				.antMatchers("/**").hasAuthority("APPLICATION")
 				.and().httpBasic().realmName(REALM).authenticationEntryPoint(getBasicAuthEntryPoint())
 				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);//We don't need sessions to be created.
-
 	}
 
 	@Bean
