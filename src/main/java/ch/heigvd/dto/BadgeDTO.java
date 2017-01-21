@@ -36,7 +36,7 @@ public class BadgeDTO
         this.repeatable = badge.isRepeatable();
     }
 
-    static public BadgeDTO fromBadgesList(Badge badge){
+    static public BadgeDTO fromBadge(Badge badge){
         return new BadgeDTO(badge);
     }
 

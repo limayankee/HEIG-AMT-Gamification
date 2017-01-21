@@ -2,10 +2,12 @@ package ch.heigvd.api;
 
 import ch.heigvd.Exception.BadRequestException;
 import ch.heigvd.Exception.NotFoundException;
-import ch.heigvd.dao.ApplicationRepository;
 import ch.heigvd.dao.LevelRepository;
 import ch.heigvd.dao.UserRepository;
-import ch.heigvd.dto.*;
+import ch.heigvd.dto.ApplicationDTO;
+import ch.heigvd.dto.BadgeDTO;
+import ch.heigvd.dto.LevelDTO;
+import ch.heigvd.dto.UserDTO;
 import ch.heigvd.models.Application;
 import ch.heigvd.models.Level;
 import ch.heigvd.models.User;
@@ -51,7 +53,7 @@ public class UserController {
 					.mapToInt(ub -> ub.getCount() * ub.getPk().getBadge().getPoints()).sum();
 			List<BadgeDTO> badges = u.getUserBadges().stream()
 					.map(ub -> ub.getPk().getBadge())
-					.map(BadgeDTO::fromBadgesList)
+					.map(BadgeDTO::fromBadge)
 					.collect(Collectors.toList());
 			Level l = levelRepository.findByMaxThreshold(level);
 			if (l == null) {

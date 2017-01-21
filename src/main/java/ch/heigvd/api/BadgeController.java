@@ -47,13 +47,39 @@ public class BadgeController
             throw new NotFoundException("No badge found for this application");
         }
 
-       return badges.stream().map(BadgeDTO::fromBadgesList).collect(Collectors.toList());
+       return badges.stream().map(BadgeDTO::fromBadge).collect(Collectors.toList());
     }
 
-    @RequestMapping(method = RequestMethod.DELETE)
-    public void delete(@RequestAttribute("application") Application application){
-        List<Badge> badges = badgeRepository.findByApplicationId(application.getId());
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{badgeName}")
+    public void delete(@RequestAttribute("application") Application application, @PathVariable String badgeName){
+        Badge badge = badgeRepository.findByNameAndApplicationId(badgeName, application.getId());
 
-        badgeRepository.delete(badges);
+        if (badge == null){
+            throw new NotFoundException("No badge matching name: " + badgeName);
+        }
+
+        badgeRepository.delete(badge);
+    }
+
+    @RequestMapping(method = RequestMethod.PATCH, value = "/{badgeName}")
+    public void patch(@RequestAttribute("application") Application application, @PathVariable String badgeName, @RequestBody BadgeDTO input){
+        Badge badge = badgeRepository.findByNameAndApplicationId(badgeName, application.getId());
+
+        if (badge == null){
+            throw new NotFoundException("No badge matching name: " + badgeName);
+        }
+
+        Badge toTest = badgeRepository.findByName(input.getName());
+
+        if (toTest != null && toTest.getId() != badge.getId()){
+            throw new NotFoundException("There is already a badge with this name");
+        }
+
+        badge.setName(input.getName());
+        badge.setImage(input.getImage());
+        badge.setPoints(input.getPoints());
+        badge.setRepeatable(input.isRepeatable());
+
+        badgeRepository.save(badge);
     }
 }
