@@ -1,6 +1,6 @@
 package ch.heigvd.api;
 
-import ch.heigvd.dto.ApplicationDTOIn;
+import ch.heigvd.dto.ApplicationRegisterDTO;
 import ch.heigvd.models.Application;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +17,7 @@ public class Register
 {
 
     @RequestMapping(method = RequestMethod.POST)
-    String add(@RequestBody ApplicationDTOIn input) {
+    String add(@RequestBody ApplicationRegisterDTO input) {
         Application app = input.buildApplication();
         Application test = new Application();
         System.out.println(input.name + " " + input.password);
