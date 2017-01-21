@@ -1,8 +1,11 @@
 package ch.heigvd.dao;
 
+import ch.heigvd.models.Application;
 import ch.heigvd.models.Level;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+
+import java.util.List;
 
 public interface LevelRepository extends CrudRepository<Level, Integer> {
 
