@@ -12,6 +12,8 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping(value = "/events", consumes = "application/json")
 public class EventController {
@@ -36,7 +38,7 @@ public class EventController {
 	})
 	@ApiParam(value = "The information of the new application", required = true)
 	@RequestMapping(method = RequestMethod.POST)
-	EventDTO echoEvent(@RequestAttribute("application") Application app, @RequestBody EventDTO event) {
+	EventDTO echoEvent(@RequestAttribute("application") Application app, @Valid @RequestBody EventDTO event) {
 		User u = userRepository.findByAppUserIdAndApplicationId(event.getUserId(), app.getId());
 		if (u == null) {
 			userRepository.save(new User(applicationRepository.findById(app.getId()), event.getUserId()));

@@ -49,4 +49,11 @@ public class BadgeController
 
        return badges.stream().map(BadgeDTO::fromBadgesList).collect(Collectors.toList());
     }
+
+    @RequestMapping(method = RequestMethod.DELETE)
+    public void delete(@RequestAttribute("application") Application application){
+        List<Badge> badges = badgeRepository.findByApplicationId(application.getId());
+
+        badgeRepository.delete(badges);
+    }
 }
