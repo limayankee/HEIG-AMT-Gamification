@@ -13,7 +13,7 @@ public class User {
 	@Column(name = "id")
 	private int id; // absolute id for this api only
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	private Application application; // to whom application it belongs
 
 	@Column(name = "appUserId")

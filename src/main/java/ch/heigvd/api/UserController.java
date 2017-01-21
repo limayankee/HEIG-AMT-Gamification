@@ -4,16 +4,13 @@ import ch.heigvd.Exception.BadRequestException;
 import ch.heigvd.Exception.NotFoundException;
 import ch.heigvd.dao.LevelRepository;
 import ch.heigvd.dao.UserRepository;
-import ch.heigvd.dto.ApplicationDTO;
 import ch.heigvd.dto.BadgeDTO;
 import ch.heigvd.dto.LevelDTO;
 import ch.heigvd.dto.UserDTO;
 import ch.heigvd.models.Application;
 import ch.heigvd.models.Level;
 import ch.heigvd.models.User;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +19,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/users")
+@Api(value = "Users", description = "CRUD on the users")
 public class UserController {
 
 	@Autowired
@@ -32,17 +30,23 @@ public class UserController {
 
 	@ApiResponses(value = {
 			@ApiResponse(
-					code = 201,
-					message = "Successful operation.",
-					response = ApplicationDTO.class
+					code = 200,
+					message = "Successful fetch",
+					response = UserDTO.class
 			),
 			@ApiResponse(
-					code = 400,
-					message = "Bad request for client",
+					code = 403,
+					message = "You need at least one Level with threshold 0 on your application",
+					response = Void.class
+			),
+			@ApiResponse(
+					code = 404,
+					message = "Could not find given user",
 					response = Void.class
 			)
 	})
-	@ApiParam(value = "The information of the new application", required = true)
+	@ApiOperation(value = "Fetches an user")
+	@ApiParam(name = "userId", value = "The application custom user id")
 	@RequestMapping(method = RequestMethod.GET, value = "/{userId}", produces = {"application/json"})
 	public UserDTO getUser(@RequestAttribute("application") Application app, @PathVariable String userId) {
 		User u = userRepository.findByAppUserIdAndApplicationId(userId, app.getId());
@@ -60,6 +64,28 @@ public class UserController {
 				throw new BadRequestException("You need at least one Level with threshold 0 on your application");
 			}
 			return new UserDTO(u.getAppUserId(), new LevelDTO(l.getName(), l.getThreshold()), level, badges);
+		}
+	}
+
+	@ApiResponses(value = {
+			@ApiResponse(
+					code = 200,
+					message = "",
+					response = UserDTO.class),
+			@ApiResponse(
+					code = 404,
+					message = "Could not find given user",
+					response = Void.class
+			)
+	})
+	@ApiOperation(value = "Deletes an user.")
+	@RequestMapping(method = RequestMethod.DELETE, value = "/{userId}")
+	public void deleteUser(@RequestAttribute("application") Application app, @PathVariable String userId) {
+		User u = userRepository.findByAppUserIdAndApplicationId(userId, app.getId());
+		if (u == null) {
+			throw new NotFoundException("Could not find given user");
+		} else {
+			userRepository.delete(u.getId());
 		}
 	}
 }
