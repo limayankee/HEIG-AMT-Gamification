@@ -9,10 +9,13 @@ import java.util.Set;
 public class User {
 	@Id
 	@Column(name = "id")
-	private int id;
+	private int id; // absolute id for this api only
 
-	@Column(name = "application_user_id")
-	private String applicationUserId;
+	@ManyToOne(cascade = CascadeType.ALL)
+	private Application application; // to whom application it belongs
+
+	@Column(name = "appUserId")
+	private String applicationUserId; // userId in application
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, targetEntity = Badge.class)
 	@JoinTable(name = "users_badges", joinColumns = {
@@ -45,4 +48,5 @@ public class User {
 	public void setApplicationUserId(String applicationUserId) {
 		this.applicationUserId = applicationUserId;
 	}
+
 }
