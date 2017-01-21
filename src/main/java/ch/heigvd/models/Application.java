@@ -17,4 +17,7 @@ public class Application
     @Column(name = "id")
     private int id;
 
+    @Column(name = "password")
+    private String password;
+
 }
