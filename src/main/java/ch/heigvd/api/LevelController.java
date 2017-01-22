@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -46,8 +47,6 @@ public class LevelController
 
     @ApiOperation(value = "Retrieve a specific level.")
 
-    @ApiParam(name = "name")
-
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -62,8 +61,8 @@ public class LevelController
     })
 
     @RequestMapping(method = RequestMethod.GET, value = "/{name}", produces = {"application/json"})
-    public LevelDTO getLevel(@RequestAttribute("application") Application app,
-                                      @PathVariable("name") String name) {
+    public LevelDTO getLevel(@ApiIgnore @RequestAttribute("application") Application app,
+                             @PathVariable("name") String name) {
         Level level = levelRepository.findByNameAndApplication(name, app);
 
         if(level == null){
@@ -109,7 +108,7 @@ public class LevelController
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @ApiOperation(value = "Updates a specific level.")
+    @ApiOperation(value = "Update a specific level.")
 
     @ApiResponses(value = {
             @ApiResponse(
@@ -153,7 +152,7 @@ public class LevelController
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @ApiOperation(value = "Deletes a specific level.")
+    @ApiOperation(value = "Delete a specific level.")
 
     @ApiResponses(value = {
             @ApiResponse(

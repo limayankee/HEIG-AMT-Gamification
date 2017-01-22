@@ -30,7 +30,7 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("ch.heigvd.api"))
-                .paths(PathSelectors.ant("/*"))
+                .paths(PathSelectors.ant("/**"))
                 .build()
                 .apiInfo(apiInfo());
     }

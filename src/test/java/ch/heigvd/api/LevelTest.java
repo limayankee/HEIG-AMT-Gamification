@@ -1,6 +1,10 @@
 package ch.heigvd.api;
 
+import ch.heigvd.dao.ApplicationRepository;
+import ch.heigvd.dao.LevelRepository;
 import ch.heigvd.dto.LevelDTO;
+import ch.heigvd.models.Application;
+import ch.heigvd.models.Level;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,23 +18,33 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by matthieu.villard on 22.01.2017.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringRunner.class)
-public class LevelControllerTest {
+public class LevelTest {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
+
+	@Autowired
+	private LevelRepository levelRepository;
+
+	@Autowired
+	private ApplicationRepository applicationRepository;
+
+	private Application app;
 
 	@Before
 	public void init() {
 		restTemplate = restTemplate.withBasicAuth("pollcat", "pollcat");
 		LevelDTO level = new LevelDTO("existingLevelTest", 20);
 		restTemplate.postForEntity("/levels", level, Void.class);
+		app = applicationRepository.findByName("pollcat");
 	}
 
 	@After
@@ -44,7 +58,9 @@ public class LevelControllerTest {
 
 		assertEquals(HttpStatus.CREATED, restTemplate.postForEntity("/levels", dto, Void.class).getStatusCode());
 
-		assertEquals(HttpStatus.OK, restTemplate.getForEntity("/levels/{name}", LevelDTO.class, "levelTest").getStatusCode());
+		Level level = levelRepository.findByNameAndApplication("levelTest", app);
+
+		assertNotNull(level);
 
 		restTemplate.delete("/levels/{name}", "levelTest");
 	}

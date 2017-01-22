@@ -83,7 +83,7 @@ public class RuleController
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @ApiOperation(value = "Updates a specific rule.")
+    @ApiOperation(value = "Update a specific rule.")
 
     @ApiResponses(value = {
             @ApiResponse(
@@ -128,7 +128,7 @@ public class RuleController
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @ApiOperation(value = "Deletes a specific rule.")
+    @ApiOperation(value = "Delete a specific rule.")
 
     @ApiResponses(value = {
             @ApiResponse(
