@@ -4,7 +4,10 @@ import ch.heigvd.dao.*;
 import ch.heigvd.dto.EventDTO;
 import ch.heigvd.dto.EventProcessingResultDTO;
 import ch.heigvd.dto.ScriptEngineResultDTO;
-import ch.heigvd.models.*;
+import ch.heigvd.models.Application;
+import ch.heigvd.models.Rule;
+import ch.heigvd.models.Trigger;
+import ch.heigvd.models.User;
 import ch.heigvd.scripting.rules.CriterionDelta;
 import ch.heigvd.scripting.rules.RuleEngine;
 import ch.heigvd.scripting.triggers.TriggerEngine;
@@ -15,9 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/events", consumes = "application/json")
@@ -65,16 +68,16 @@ public class EventController {
 		}
 
 		List<Rule> rules = ruleRepository.findMatching(app, event.getType());
-		try (RuleEngine ruleEngine = new RuleEngine(app, user, event, criterionRepository, badgeRepository, userBadgeRepository);
-		     TriggerEngine triggerEngine = new TriggerEngine()) {
+		try (RuleEngine ruleEngine = new RuleEngine(app, user, event, criterionRepository, badgeRepository, userBadgeRepository)) {
 			rules.forEach(ruleEngine::executeRule);
-			Set<String> updatedCriteriaNames = ruleEngine.getUpdatedCriteria()
-			                                             .stream()
-			                                             .map(CriterionDelta::getCriterion)
-			                                             .map(Criterion::getName)
-			                                             .collect(Collectors.toSet());
-			List<Trigger> triggers = triggerRepository.findByCriterionName(updatedCriteriaNames);
-			return new EventProcessingResultDTO(ruleEngine.getResult(), triggerEngine.getResult());
+			Collection<CriterionDelta> updatedCriteria = ruleEngine.getUpdatedCriteria();
+			try (TriggerEngine triggerEngine = new TriggerEngine(app, user, updatedCriteria, badgeRepository, userBadgeRepository)) {
+				if (!updatedCriteria.isEmpty()) {
+					Set<String> updatedCriteriaNames = triggerEngine.updatedCriteriaNames();
+					List<Trigger> triggers = triggerRepository.findByCriterionName(updatedCriteriaNames);
+				}
+				return new EventProcessingResultDTO(ruleEngine.getResult(), triggerEngine.getResult());
+			}
 		}
 	}
 }
