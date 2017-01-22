@@ -1,10 +1,10 @@
 package ch.heigvd.scripting.rules;
 
+import ch.heigvd.dao.BadgeRepository;
 import ch.heigvd.dao.CriterionRepository;
+import ch.heigvd.dao.UserBadgeRepository;
 import ch.heigvd.dto.EventDTO;
-import ch.heigvd.models.Criterion;
-import ch.heigvd.models.Rule;
-import ch.heigvd.models.User;
+import ch.heigvd.models.*;
 import ch.heigvd.scripting.ScriptingEngine;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
@@ -15,15 +15,22 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class RuleEngine extends ScriptingEngine {
+	private final Application app;
 	private final User user;
 	private final EventDTO event;
 	private final CriterionRepository criterionRepository;
+	private final BadgeRepository badgeRepository;
+	private final UserBadgeRepository userBadgeRepository;
 	private final Map<String, CriterionDelta> updatedCriteria = new TreeMap<>();
 
-	public RuleEngine(User user, EventDTO event, CriterionRepository criterionRepository) {
+	public RuleEngine(Application app, User user, EventDTO event, CriterionRepository criterionRepository,
+	                  BadgeRepository badgeRepository, UserBadgeRepository userBadgeRepository) {
+		this.app = app;
 		this.user = user;
 		this.event = event;
 		this.criterionRepository = criterionRepository;
+		this.badgeRepository = badgeRepository;
+		this.userBadgeRepository = userBadgeRepository;
 	}
 
 	@Override
@@ -98,12 +105,24 @@ public class RuleEngine extends ScriptingEngine {
 		increment(criterion, -delta);
 	}
 
-	public void award(String badge) {
-		awardMultiple(badge, 1);
+	public void award(String name) {
+		awardMultiple(name, 1);
 	}
 
-	public void awardMultiple(String badge, int count) {
-		System.out.format("Awarding %s x %d\n", badge, count);
+	public void awardMultiple(String name, int count) {
+		Badge badge = badgeRepository.findByNameAndApplicationId(name, app.getId());
+		UserBadgeId pk = new UserBadgeId(user, badge);
+		UserBadge userBadge = userBadgeRepository.findByPk(pk);
+		if (userBadge == null) {
+			userBadge = new UserBadge();
+			userBadge.setPk(pk);
+			userBadge.setCount(1);
+		} else if (!badge.isRepeatable()) {
+			return;
+		} else {
+			userBadge.setCount(userBadge.getCount() + count);
+		}
+		userBadgeRepository.save(userBadge);
 	}
 
 	public void executeRule(Rule rule) {

@@ -22,4 +22,8 @@ public class CriterionDelta {
 	public int getInitialValue() {
 		return initialValue;
 	}
+
+	public int getDelta() {
+		return criterion.getValue() - initialValue;
+	}
 }

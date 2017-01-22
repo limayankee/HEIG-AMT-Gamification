@@ -9,6 +9,12 @@ public class UserBadgeId implements Serializable {
 	@ManyToOne
 	private Badge badge;
 
+	public UserBadgeId() {}
+	public UserBadgeId(User user, Badge badge) {
+		this.user = user;
+		this.badge = badge;
+	}
+
 	public User getUser() {
 		return user;
 	}
