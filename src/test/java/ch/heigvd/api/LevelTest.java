@@ -18,8 +18,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 /**
  * Created by matthieu.villard on 22.01.2017.
@@ -70,7 +69,6 @@ public class LevelTest {
 		LevelDTO dto = new LevelDTO("existingLevelTest", 200000);
 
 		assertEquals(HttpStatus.CONFLICT, restTemplate.postForEntity("/levels", dto, Void.class).getStatusCode());
-
 	}
 
 	@Test
@@ -82,8 +80,9 @@ public class LevelTest {
 
 		assertEquals(HttpStatus.NO_CONTENT, response);
 
-		response = restTemplate.getForEntity("/levels/{name}", Void.class, "existingLevelTest").getStatusCode();
-		assertEquals(HttpStatus.NOT_FOUND, response);
+		Level level = levelRepository.findByNameAndApplication("existingLevelTest", app);
+
+		assertNull(level);
 	}
 
 	@Test
@@ -95,7 +94,7 @@ public class LevelTest {
 	@Test
 	public void testLevelNotFound() {
 
-		HttpStatus response = restTemplate.getForEntity("/levels", LevelDTO.class, "levelNotFoundTest")
+		HttpStatus response = restTemplate.getForEntity("/levels/{name}", LevelDTO.class, "levelNotFoundTest")
 		                                  .getStatusCode();
 
 		assertEquals(HttpStatus.NOT_FOUND, response);

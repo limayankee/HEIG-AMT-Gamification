@@ -5,6 +5,7 @@ import ch.heigvd.Exception.NotFoundException;
 import ch.heigvd.dao.RuleRepository;
 import ch.heigvd.dto.RuleDTO;
 import ch.heigvd.models.Application;
+import ch.heigvd.models.Level;
 import ch.heigvd.models.Rule;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -24,7 +26,7 @@ import java.util.stream.Collectors;
  */
 
 @RestController
-@RequestMapping(value = "/rules", consumes = "application/json")
+@RequestMapping(value = "/rules")
 @Api(value = "Rules", description = "CRUD on the rules")
 public class RuleController
 {
@@ -47,6 +49,33 @@ public class RuleController
         return ruleRepository.findByApplication(app).stream().map(RuleDTO::fromRule).collect(Collectors.toList());
     }
 
+    @ApiOperation(value = "Retrieve a specific rule.")
+
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "Successful operation.",
+                    response = Level.class
+            ),
+            @ApiResponse(
+                    code = 404,
+                    message = "Rule do not exist",
+                    response = Void.class
+            )
+    })
+
+    @RequestMapping(method = RequestMethod.GET, value = "/{name}", produces = {"application/json"})
+    public RuleDTO getRule(@ApiIgnore @RequestAttribute("application") Application app,
+                             @PathVariable("name") String name) {
+        Rule rule = ruleRepository.findByNameAndApplication(name, app);
+
+        if(rule == null){
+            throw new NotFoundException("Rule do not exist");
+        }
+
+        return RuleDTO.fromRule(rule);
+    }
+
     @ApiOperation(value = "Create a rule.")
 
     @ApiResponses(value = {
@@ -67,7 +96,7 @@ public class RuleController
             )
     })
 
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity addRule(@RequestAttribute("application") Application app, @Valid @RequestBody RuleDTO input) {
 
         Rule rule = ruleRepository.findByNameAndApplication(input.getName(), app);
@@ -103,7 +132,7 @@ public class RuleController
             )
     })
 
-    @RequestMapping(method = RequestMethod.PATCH, value = "/{name}")
+    @RequestMapping(method = RequestMethod.PATCH, value = "/{name}", consumes = "application/json")
     public ResponseEntity editRule(@RequestAttribute("application") Application app, @Valid @RequestBody RuleDTO input,
                                    @PathVariable("name") String name) {
 
