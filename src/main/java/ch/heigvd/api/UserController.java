@@ -76,6 +76,8 @@ public class UserController {
 		if (u != null) {
 			throw new ConflictException("User already exists");
 		}
+
+		userRepository.save(new User(app, userId));
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
