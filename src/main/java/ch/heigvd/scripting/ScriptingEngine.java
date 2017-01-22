@@ -23,14 +23,14 @@ public abstract class ScriptingEngine extends ScriptableObject implements AutoCl
 	protected final Context context = Context.enter();
 	private boolean initialized = false;
 	private List<String> scripts = new LinkedList<>();
-	private List<String> errors = new LinkedList<>();
+	private List<String> traces = new LinkedList<>();
 	private String output = "";
 
 	private void lazyInitialize() {
 		if (initialized) throw new IllegalStateException();
 		setPrototype(getRootScope());
 		setParentScope(null);
-		defineFunctionProperties(new String[]{"print"}, ScriptingEngine.class, ScriptableObject.DONTENUM);
+		defineFunctionProperties(new String[]{"trace"}, ScriptingEngine.class, ScriptableObject.DONTENUM);
 		defineFunctions();
 		defineProperties();
 		sealObject();
@@ -50,16 +50,12 @@ public abstract class ScriptingEngine extends ScriptableObject implements AutoCl
 		context.evaluateString(scope, script, name, 1, null);
 	}
 
-	public void print(String text) {
-		output += text + "\n";
-	}
-
-	public void error(String text) {
-		errors.add(text);
+	public void trace(String text) {
+		traces.add(text);
 	}
 
 	public ScriptEngineResultDTO getResult() {
-		return new ScriptEngineResultDTO(scripts, errors, output);
+		return new ScriptEngineResultDTO(scripts, traces);
 	}
 
 	@Override

@@ -4,13 +4,11 @@ import java.util.List;
 
 public class ScriptEngineResultDTO {
 	private List<String> scripts;
-	private List<String> errors;
-	private String output;
+	private List<String> traces;
 
-	public ScriptEngineResultDTO(List<String> scripts, List<String> errors, String output) {
-		this.output = output;
-		this.errors = errors;
+	public ScriptEngineResultDTO(List<String> scripts, List<String> traces) {
 		this.scripts = scripts;
+		this.traces = traces;
 	}
 
 	public List<String> getScripts() {
@@ -21,19 +19,11 @@ public class ScriptEngineResultDTO {
 		this.scripts = scripts;
 	}
 
-	public List<String> getErrors() {
-		return errors;
+	public List<String> getTraces() {
+		return traces;
 	}
 
-	public void setErrors(List<String> errors) {
-		this.errors = errors;
-	}
-
-	public String getOutput() {
-		return output;
-	}
-
-	public void setOutput(String output) {
-		this.output = output;
+	public void setTraces(List<String> traces) {
+		this.traces = traces;
 	}
 }
