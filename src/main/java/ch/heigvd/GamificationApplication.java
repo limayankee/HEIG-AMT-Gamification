@@ -3,11 +3,13 @@ package ch.heigvd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.web.client.RestTemplate;
 import springfox.documentation.swagger.web.SecurityConfiguration;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
@@ -29,6 +31,11 @@ public class GamificationApplication {
 		driverManagerDataSource.setUsername(env.getProperty("spring.datasource.username"));
 		driverManagerDataSource.setPassword(env.getProperty("spring.datasource.password"));
 		return driverManagerDataSource;
+	}
+
+	@Bean
+	public RestTemplate restTemplate(RestTemplateBuilder builder) {
+		return builder.build();
 	}
 
 	public static void main(String[] args) {
