@@ -40,6 +40,8 @@ public class BadgeDTO
         return new BadgeDTO(badge);
     }
 
+    public BadgeDTO(){}
+
     public String getName()
     {
         return name;
