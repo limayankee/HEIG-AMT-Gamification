@@ -22,13 +22,8 @@ public class Trigger {
 	@JoinColumn(name = "application_id", nullable = false)
 	private Application application;
 
-	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "triggers_criteria", joinColumns = {
-			@JoinColumn(name = "triggerId", updatable = false)
-	}, inverseJoinColumns = {
-			@JoinColumn(name = "criterionId", updatable = false)
-	})
-	private Set<Criterion> criteria = new HashSet<Criterion>();
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "trigger")
+	private Set<TriggerCriteria> triggerCriterias = new HashSet<>();
 
 	public int getId() {
 		return id;
@@ -54,20 +49,19 @@ public class Trigger {
 		this.expr = expr;
 	}
 
-
-	public Set<Criterion> getCriteria() {
-		return criteria;
-	}
-
-	public void setCriteria(Set<Criterion> criteria) {
-		this.criteria = criteria;
-	}
-
 	public Application getApplication() {
 		return application;
 	}
 
 	public void setApplication(Application application) {
 		this.application = application;
+	}
+
+	public Set<TriggerCriteria> getTriggerCriterias() {
+		return triggerCriterias;
+	}
+
+	public void setTriggerCriterias(Set<TriggerCriteria> triggerCriterias) {
+		this.triggerCriterias = triggerCriterias;
 	}
 }

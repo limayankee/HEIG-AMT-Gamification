@@ -21,14 +21,6 @@ public class Criterion {
 	@Column(name = "value", nullable = false)
 	private int value;
 
-	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "triggers_criteria", joinColumns = {
-			@JoinColumn(name = "triggerId", updatable = false)
-	}, inverseJoinColumns = {
-			@JoinColumn(name = "criterionId", updatable = false)
-	})
-	private Set<Trigger> triggers;
-
 	public int getId() {
 		return id;
 	}
@@ -61,11 +53,4 @@ public class Criterion {
 		this.value = value;
 	}
 
-	public Set<Trigger> getTriggers() {
-		return triggers;
-	}
-
-	public void setTriggers(Set<Trigger> triggers) {
-		this.triggers = triggers;
-	}
 }
