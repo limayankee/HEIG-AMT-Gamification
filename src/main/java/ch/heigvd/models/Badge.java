@@ -26,6 +26,7 @@ public class Badge {
 	@Column(name = "repeatable", nullable = false)
 	private boolean repeatable;
 
+	public Badge() {}
 	public Badge(String name, String image, int points, boolean repeatable, Application application)
 	{
 		this.name = name;
