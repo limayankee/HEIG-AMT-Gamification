@@ -1,6 +1,7 @@
 package ch.heigvd.api;
 
 import ch.heigvd.Exception.BadRequestException;
+import ch.heigvd.Exception.ConflictException;
 import ch.heigvd.Exception.NotFoundException;
 import ch.heigvd.dao.LevelRepository;
 import ch.heigvd.dao.UserRepository;
@@ -12,6 +13,8 @@ import ch.heigvd.models.Level;
 import ch.heigvd.models.User;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -65,6 +68,15 @@ public class UserController {
 			}
 			return new UserDTO(u.getAppUserId(), new LevelDTO(l.getName(), l.getThreshold()), level, badges);
 		}
+	}
+
+	@RequestMapping(method = RequestMethod.POST, value = "/{userId}")
+	public ResponseEntity createUser(@RequestAttribute("application") Application app, @PathVariable String userId) {
+		User u = userRepository.findByAppUserIdAndApplicationId(userId, app.getId());
+		if (u != null) {
+			throw new ConflictException("User already exists");
+		}
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	@ApiResponses(value = {
