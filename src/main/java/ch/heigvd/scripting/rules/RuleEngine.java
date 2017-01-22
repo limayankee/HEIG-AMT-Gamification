@@ -9,13 +9,16 @@ import ch.heigvd.scripting.ScriptingEngine;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class RuleEngine extends ScriptingEngine {
 	private final User user;
 	private final EventDTO event;
 	private final CriterionRepository criterionRepository;
-	private final Set<String> updatedCriteria = new TreeSet<>();
+	private final Map<String, CriterionDelta> updatedCriteria = new TreeMap<>();
 
 	public RuleEngine(User user, EventDTO event, CriterionRepository criterionRepository) {
 		this.user = user;
@@ -60,14 +63,19 @@ public class RuleEngine extends ScriptingEngine {
 	}
 
 	private Criterion fetchCriterion(String name) {
-		Criterion criterion = criterionRepository.findByNameAndUserId(name, user.getId());
-		if (criterion == null) {
-			criterion = new Criterion();
-			criterion.setName(name);
-			criterion.setUserId(user.getId());
-			criterion.setValue(0);
+		if (updatedCriteria.containsKey(name)) {
+			return updatedCriteria.get(name).getCriterion();
+		} else {
+			Criterion criterion = criterionRepository.findByNameAndUserId(name, user.getId());
+			if (criterion == null) {
+				criterion = new Criterion();
+				criterion.setName(name);
+				criterion.setUserId(user.getId());
+				criterion.setValue(0);
+			}
+			updatedCriteria.put(name, CriterionDelta.fromCriterion(criterion));
+			return criterion;
 		}
-		return criterion;
 	}
 
 	public void reset(String criterion) {
@@ -78,14 +86,12 @@ public class RuleEngine extends ScriptingEngine {
 		Criterion criterion = fetchCriterion(name);
 		criterion.setValue(value);
 		criterionRepository.save(criterion);
-		updatedCriteria.add(name);
 	}
 
 	public void increment(String name, int delta) {
 		Criterion criterion = fetchCriterion(name);
 		criterion.setValue(criterion.getValue() + delta);
 		criterionRepository.save(criterion);
-		updatedCriteria.add(name);
 	}
 
 	public void decrement(String criterion, int delta) {
@@ -104,7 +110,7 @@ public class RuleEngine extends ScriptingEngine {
 		execute(rule.getName(), rule.getExpr());
 	}
 
-	public Set<String> getUpdatedCriteria() {
-		return updatedCriteria;
+	public Collection<CriterionDelta> getUpdatedCriteria() {
+		return updatedCriteria.values();
 	}
 }
