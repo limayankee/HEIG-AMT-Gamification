@@ -4,8 +4,11 @@ import ch.heigvd.dao.BadgeRepository;
 import ch.heigvd.dao.CriterionRepository;
 import ch.heigvd.dao.UserBadgeRepository;
 import ch.heigvd.dto.EventDTO;
-import ch.heigvd.models.*;
-import ch.heigvd.scripting.ScriptingEngine;
+import ch.heigvd.models.Application;
+import ch.heigvd.models.Criterion;
+import ch.heigvd.models.Rule;
+import ch.heigvd.models.User;
+import ch.heigvd.scripting.BadgeAwardingEngine;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
@@ -14,23 +17,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class RuleEngine extends ScriptingEngine {
-	private final Application app;
-	private final User user;
+public class RuleEngine extends BadgeAwardingEngine {
 	private final EventDTO event;
 	private final CriterionRepository criterionRepository;
-	private final BadgeRepository badgeRepository;
-	private final UserBadgeRepository userBadgeRepository;
 	private final Map<String, CriterionDelta> updatedCriteria = new TreeMap<>();
 
 	public RuleEngine(Application app, User user, EventDTO event, CriterionRepository criterionRepository,
 	                  BadgeRepository badgeRepository, UserBadgeRepository userBadgeRepository) {
-		this.app = app;
-		this.user = user;
+		super(app, user, badgeRepository, userBadgeRepository);
 		this.event = event;
 		this.criterionRepository = criterionRepository;
-		this.badgeRepository = badgeRepository;
-		this.userBadgeRepository = userBadgeRepository;
 	}
 
 	@Override
@@ -65,7 +61,8 @@ public class RuleEngine extends ScriptingEngine {
 
 	@Override
 	protected void defineFunctions() {
-		String[] names = new String[]{"reset", "set", "increment", "decrement", "award", "awardMultiple"};
+		super.defineFunctions();
+		String[] names = new String[]{"reset", "increment", "decrement"};
 		defineFunctionProperties(names, RuleEngine.class, ScriptableObject.DONTENUM);
 	}
 
@@ -85,44 +82,23 @@ public class RuleEngine extends ScriptingEngine {
 		}
 	}
 
-	public void reset(String criterion) {
-		set(criterion, 0);
-	}
-
-	public void set(String name, int value) {
+	public void reset(String name, int value) {
 		Criterion criterion = fetchCriterion(name);
 		criterion.setValue(value);
 		criterionRepository.save(criterion);
+		trace(String.format("Reset criterion '%s' to value '%d'", name, value));
 	}
 
 	public void increment(String name, int delta) {
 		Criterion criterion = fetchCriterion(name);
 		criterion.setValue(criterion.getValue() + delta);
 		criterionRepository.save(criterion);
+		trace(String.format("Updated criterion '%s' to value %d (%s%d)",
+				name, criterion.getValue(), delta < 0 ? "-" : "+", Math.abs(delta)));
 	}
 
 	public void decrement(String criterion, int delta) {
 		increment(criterion, -delta);
-	}
-
-	public void award(String name) {
-		awardMultiple(name, 1);
-	}
-
-	public void awardMultiple(String name, int count) {
-		Badge badge = badgeRepository.findByNameAndApplicationId(name, app.getId());
-		UserBadgeId pk = new UserBadgeId(user, badge);
-		UserBadge userBadge = userBadgeRepository.findByPk(pk);
-		if (userBadge == null) {
-			userBadge = new UserBadge();
-			userBadge.setPk(pk);
-			userBadge.setCount(badge.isRepeatable() ? count : 1);
-		} else if (!badge.isRepeatable()) {
-			return;
-		} else {
-			userBadge.setCount(userBadge.getCount() + count);
-		}
-		userBadgeRepository.save(userBadge);
 	}
 
 	public void executeRule(Rule rule) {
