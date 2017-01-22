@@ -63,6 +63,7 @@ public class UserTest {
 		restTemplate.delete("/users/{userId}", mockTemporaryUser);
 
 		HttpEntity<Void> entity = new HttpEntity<>(null, new HttpHeaders());
+
 		HttpStatus response = restTemplate //expects that user is NOT_FOUND
 				.exchange("/users/{userId}", HttpMethod.GET, entity, UserDTO.class, mockTemporaryUser)
 				.getStatusCode();

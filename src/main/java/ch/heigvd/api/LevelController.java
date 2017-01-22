@@ -6,10 +6,7 @@ import ch.heigvd.dao.LevelRepository;
 import ch.heigvd.dto.LevelDTO;
 import ch.heigvd.models.Application;
 import ch.heigvd.models.Level;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +21,7 @@ import java.util.stream.Collectors;
  */
 
 @RestController
-@RequestMapping(value = "/levels", consumes = "application/json")
+@RequestMapping(value = "/levels")
 @Api(value = "Levels", description = "CRUD on the levels")
 public class LevelController
 {
@@ -49,6 +46,8 @@ public class LevelController
 
     @ApiOperation(value = "Retrieve a specific level.")
 
+    @ApiParam(name = "name")
+
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -62,7 +61,7 @@ public class LevelController
             )
     })
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{name}")
+    @RequestMapping(method = RequestMethod.GET, value = "/{name}", produces = {"application/json"})
     public LevelDTO getLevel(@RequestAttribute("application") Application app,
                                       @PathVariable("name") String name) {
         Level level = levelRepository.findByNameAndApplication(name, app);
@@ -94,9 +93,8 @@ public class LevelController
             )
     })
 
-    @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity addLevel(@RequestAttribute("application") Application app, @Valid @RequestBody LevelDTO
-            input) {
+    @RequestMapping(method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity addLevel(@RequestAttribute("application") Application app, @Valid @RequestBody LevelDTO input) {
 
         Level level = levelRepository.findByNameAndApplication(input.getName(), app);
 
@@ -131,7 +129,7 @@ public class LevelController
             )
     })
 
-    @RequestMapping(method = RequestMethod.PATCH, value = "/{name}")
+    @RequestMapping(method = RequestMethod.PATCH, value = "/{name}", consumes = "application/json")
     public ResponseEntity editLevel(@RequestAttribute("application") Application app, @Valid @RequestBody LevelDTO input,
                                    @PathVariable("name") String name) {
 

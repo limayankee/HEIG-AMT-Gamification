@@ -1,84 +1,87 @@
 package ch.heigvd.api;
 
 import ch.heigvd.dto.LevelDTO;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.Assert.*;
 
 /**
  * Created by matthieu.villard on 22.01.2017.
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration
-@WebAppConfiguration
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@RunWith(SpringRunner.class)
 public class LevelControllerTest {
 
 	@Autowired
-	private WebApplicationContext context;
-
-	private MockMvc mvc;
+	private TestRestTemplate restTemplate;
 
 	@Before
-	public void setup() {
-		mvc = MockMvcBuilders
-				.webAppContextSetup(context)
-				.apply(springSecurity())
-				.build();
+	public void init() {
+		restTemplate = restTemplate.withBasicAuth("pollcat", "pollcat");
+		LevelDTO level = new LevelDTO("existingLevelTest", 20);
+		restTemplate.postForEntity("/levels", level, Void.class);
 	}
 
-
+	@After
+	public void reset() {
+		restTemplate.delete("/levels/{name}", "existingLevelTest");
+	}
 
 	@Test
-	public void getLevels() throws Exception {
+	public void testCreateLevel() throws Exception {
+		LevelDTO dto = new LevelDTO("levelTest", 200000);
 
+		assertEquals(HttpStatus.CREATED, restTemplate.postForEntity("/levels", dto, Void.class).getStatusCode());
 
+		assertEquals(HttpStatus.OK, restTemplate.getForEntity("/levels/{name}", LevelDTO.class, "levelTest").getStatusCode());
 
+		restTemplate.delete("/levels/{name}", "levelTest");
 	}
-
 
 	@Test
-	@Transactional
-	public void canPostLevel() throws Exception {
+	public void testCreateLevelWithConflict() throws Exception {
+		LevelDTO dto = new LevelDTO("existingLevelTest", 200000);
 
-		LevelDTO dto = new LevelDTO("level3", 1);
+		assertEquals(HttpStatus.CONFLICT, restTemplate.postForEntity("/levels", dto, Void.class).getStatusCode());
 
-		mvc.perform(
-				post("/levels").content(asJsonString(dto))
-				                          .contentType(MediaType.APPLICATION_JSON)
-				                          .with(httpBasic("pollcat","pollcat"))
-		).andExpect(status().is(201));
-
-		mvc.perform(
-				get("/levels/level1").contentType(MediaType.APPLICATION_JSON)
-				                         .with(httpBasic("pollcat","pollcat"))
-		).andExpect(status().isOk()).andExpect(content().json(asJsonString(dto)));
 	}
 
-	public static String asJsonString(final Object obj) {
-		try {
-			return new ObjectMapper().writeValueAsString(obj);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+	@Test
+	public void testDeleteLevel() {
+		HttpEntity<Void> entity = new HttpEntity<>(null, new HttpHeaders());
+		HttpStatus response = restTemplate .exchange("/levels/{name}", HttpMethod.DELETE, entity, Void.class,
+		                                             "existingLevelTest")
+		                                   .getStatusCode();
+
+		assertEquals(HttpStatus.NO_CONTENT, response);
+
+		response = restTemplate.getForEntity("/levels/{name}", Void.class, "existingLevelTest").getStatusCode();
+		assertEquals(HttpStatus.NOT_FOUND, response);
 	}
 
+	@Test
+	public void testLevelFound() {
+		LevelDTO level = restTemplate.getForObject("/levels/{name}", LevelDTO.class, "existingLevelTest");
+		assertEquals("existingLevelTest", level.getName());
+	}
+
+	@Test
+	public void testLevelNotFound() {
+
+		HttpStatus response = restTemplate.getForEntity("/levels", LevelDTO.class, "levelNotFoundTest")
+		                                  .getStatusCode();
+
+		assertEquals(HttpStatus.NOT_FOUND, response);
+	}
 }
