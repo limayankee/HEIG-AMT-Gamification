@@ -40,7 +40,7 @@ public class RuleEngine extends ScriptingEngine {
 
 	@SuppressWarnings("unchecked")
 	private Object importPayload(Object obj) {
-		if (obj instanceof Boolean || obj instanceof Number || obj instanceof String) {
+		if (obj == null || obj instanceof Boolean || obj instanceof Number || obj instanceof String) {
 			return obj;
 		} else if (obj instanceof Map) {
 			Map<String, Object> map = (Map<String, Object>) obj;
