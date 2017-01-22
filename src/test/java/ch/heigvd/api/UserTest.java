@@ -27,7 +27,7 @@ public class UserTest {
 
 	@Before
 	public void setup() {
-		EventDTO mockEvent = new EventDTO("mockEvent", mockUser);
+		EventDTO mockEvent = new EventDTO("mockEvent", mockUser, null);
 		restTemplate = restTemplate.withBasicAuth("pollcat", "pollcat");
 		restTemplate.postForObject("/events", mockEvent, Void.class);
 	}
@@ -54,7 +54,7 @@ public class UserTest {
 
 	@Test
 	public void testDeleteUser() {
-		EventDTO mockEvent = new EventDTO("mockEvent", mockTemporaryUser);
+		EventDTO mockEvent = new EventDTO("mockEvent", mockTemporaryUser, null);
 		restTemplate.postForObject("/events", mockEvent, Void.class); //creates a new user
 
 		UserDTO user = restTemplate.getForObject("/users/{userId}", UserDTO.class, mockTemporaryUser);

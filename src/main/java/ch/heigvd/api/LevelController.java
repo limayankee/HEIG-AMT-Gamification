@@ -47,6 +47,33 @@ public class LevelController
         return levelRepository.findByApplication(app).stream().map(LevelDTO::fromLevel).collect(Collectors.toList());
     }
 
+    @ApiOperation(value = "Retrieve a specific level.")
+
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "Successful operation.",
+                    response = Level.class
+            ),
+            @ApiResponse(
+                    code = 404,
+                    message = "Level do not exist",
+                    response = Void.class
+            )
+    })
+
+    @RequestMapping(method = RequestMethod.GET, value = "/{name}")
+    public LevelDTO getLevel(@RequestAttribute("application") Application app,
+                                      @PathVariable("name") String name) {
+        Level level = levelRepository.findByNameAndApplication(name, app);
+
+        if(level == null){
+            throw new NotFoundException("Level do not exist");
+        }
+
+        return LevelDTO.fromLevel(level);
+    }
+
     @ApiOperation(value = "Create a level.")
 
     @ApiResponses(value = {

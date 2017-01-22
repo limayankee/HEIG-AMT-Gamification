@@ -9,10 +9,13 @@ public class EventDTO {
 	@NotEmpty
 	private String userId;
 
+	private Object payload;
+
 	public EventDTO() {}
-	public EventDTO(String type, String userId) {
+	public EventDTO(String type, String userId, Object payload) {
 		this.type = type;
 		this.userId = userId;
+		this.payload = payload;
 	}
 
 	public String getType() {
@@ -29,5 +32,13 @@ public class EventDTO {
 
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+
+	public Object getPayload() {
+		return payload;
+	}
+
+	public void setPayload(Object payload) {
+		this.payload = payload;
 	}
 }
