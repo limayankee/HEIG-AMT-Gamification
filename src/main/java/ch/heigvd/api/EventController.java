@@ -4,10 +4,7 @@ import ch.heigvd.dao.*;
 import ch.heigvd.dto.EventDTO;
 import ch.heigvd.dto.EventProcessingResultDTO;
 import ch.heigvd.dto.ScriptEngineResultDTO;
-import ch.heigvd.models.Application;
-import ch.heigvd.models.Rule;
-import ch.heigvd.models.Trigger;
-import ch.heigvd.models.User;
+import ch.heigvd.models.*;
 import ch.heigvd.scripting.rules.CriterionDelta;
 import ch.heigvd.scripting.rules.RuleEngine;
 import ch.heigvd.scripting.triggers.TriggerEngine;
@@ -21,6 +18,7 @@ import javax.validation.Valid;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/events", consumes = "application/json")
@@ -64,7 +62,8 @@ public class EventController {
 	EventProcessingResultDTO processEvent(@RequestAttribute("application") Application app, @Valid @RequestBody EventDTO event) throws Exception {
 		User user = userRepository.findByAppUserIdAndApplicationId(event.getUserId(), app.getId());
 		if (user == null) {
-			userRepository.save(new User(applicationRepository.findById(app.getId()), event.getUserId()));
+			user = new User(applicationRepository.findById(app.getId()), event.getUserId());
+			userRepository.save(user);
 		}
 
 		List<Rule> rules = ruleRepository.findMatching(app, event.getType());
@@ -75,6 +74,15 @@ public class EventController {
 				if (!updatedCriteria.isEmpty()) {
 					Set<String> updatedCriteriaNames = triggerEngine.updatedCriteriaNames();
 					List<Trigger> triggers = triggerRepository.findByCriterionName(updatedCriteriaNames);
+					Set<String> missingCriteriaData = triggers.stream()
+					                                          .map(Trigger::getTriggerCriterias)
+					                                          .flatMap(Set::stream)
+					                                          .map(TriggerCriteria::getCriterionName)
+					                                          .collect(Collectors.toSet());
+					missingCriteriaData.removeAll(updatedCriteriaNames);
+					List<Criterion> missing = criterionRepository.findByNameInSetForUser(missingCriteriaData, user.getId());
+					triggerEngine.loadCriteriaData(missing);
+					triggers.forEach(triggerEngine::executeTrigger);
 				}
 				return new EventProcessingResultDTO(ruleEngine.getResult(), triggerEngine.getResult());
 			}
