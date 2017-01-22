@@ -2,7 +2,7 @@ package ch.heigvd.scripting;
 
 import ch.heigvd.dto.ScriptEngineResultDTO;
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.EvaluatorException;
+import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
@@ -61,7 +61,7 @@ public abstract class ScriptingEngine extends ScriptableObject implements AutoCl
 			scope.setParentScope(null);
 			try {
 				context.evaluateString(scope, script, name, 1, null);
-			} catch (EvaluatorException ee) {
+			} catch (RhinoException ee) {
 				trace("Evaluation of script failed: " + ee.getMessage());
 			}
 		} finally {
