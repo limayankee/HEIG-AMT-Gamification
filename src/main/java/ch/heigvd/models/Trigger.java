@@ -25,6 +25,13 @@ public class Trigger {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "trigger")
 	private Set<TriggerCriteria> triggerCriterias = new HashSet<>();
 
+	public Trigger() {}
+	public Trigger(String name, String expr, Application application) {
+		this.name = name;
+		this.expr = expr;
+		this.application = application;
+	}
+
 	public int getId() {
 		return id;
 	}

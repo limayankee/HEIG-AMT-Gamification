@@ -18,4 +18,27 @@ public class TriggerCriteria {
 	@Column(name = "criterion_name", nullable = false)
 	private String criterionName;
 
+	public Trigger getTrigger() {
+		return trigger;
+	}
+
+	public void setTrigger(Trigger trigger) {
+		this.trigger = trigger;
+	}
+
+	public String getCriterionName() {
+		return criterionName;
+	}
+
+	public void setCriterionName(String criterionName) {
+		this.criterionName = criterionName;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 }
