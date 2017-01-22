@@ -18,6 +18,10 @@ public class Trigger {
 	@Column(name = "expr", nullable = false, columnDefinition="TEXT")
 	private String expr;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "application_id", nullable = false)
+	private Application application;
+
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "triggers_criteria", joinColumns = {
 			@JoinColumn(name = "triggerId", updatable = false)
@@ -57,5 +61,13 @@ public class Trigger {
 
 	public void setCriteria(Set<Criterion> criteria) {
 		this.criteria = criteria;
+	}
+
+	public Application getApplication() {
+		return application;
+	}
+
+	public void setApplication(Application application) {
+		this.application = application;
 	}
 }
