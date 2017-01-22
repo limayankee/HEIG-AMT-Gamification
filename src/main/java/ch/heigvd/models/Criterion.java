@@ -11,12 +11,14 @@ public class Criterion {
 	@Column(name = "id", nullable = false)
 	private int id;
 
+	@Column(name = "name", nullable = false)
+	private String name;
+
 	@Column(name = "userId", nullable = false)
 	private int userId;
 
 	@Column(name = "value", nullable = false)
 	private int value;
-
 
 	public int getId() {
 		return id;
@@ -24,6 +26,14 @@ public class Criterion {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public int getUserId() {
