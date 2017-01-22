@@ -18,7 +18,7 @@ public class Trigger {
 	@Column(name = "expr", nullable = false, columnDefinition="TEXT")
 	private String expr;
 
-	@OneToMany(cascade = CascadeType.ALL)
+	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "triggers_criteria", joinColumns = {
 			@JoinColumn(name = "triggerId", updatable = false)
 	}, inverseJoinColumns = {
