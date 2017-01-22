@@ -24,7 +24,6 @@ public abstract class ScriptingEngine extends ScriptableObject implements AutoCl
 	private boolean initialized = false;
 	private List<String> scripts = new LinkedList<>();
 	private List<String> traces = new LinkedList<>();
-	private String output = "";
 
 	private void lazyInitialize() {
 		if (initialized) throw new IllegalStateException();
