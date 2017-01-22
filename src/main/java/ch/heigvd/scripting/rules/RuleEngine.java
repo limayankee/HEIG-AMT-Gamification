@@ -116,7 +116,7 @@ public class RuleEngine extends ScriptingEngine {
 		if (userBadge == null) {
 			userBadge = new UserBadge();
 			userBadge.setPk(pk);
-			userBadge.setCount(1);
+			userBadge.setCount(badge.isRepeatable() ? count : 1);
 		} else if (!badge.isRepeatable()) {
 			return;
 		} else {
