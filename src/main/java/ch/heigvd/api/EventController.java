@@ -5,11 +5,13 @@ import ch.heigvd.dao.CriterionRepository;
 import ch.heigvd.dao.RuleRepository;
 import ch.heigvd.dao.UserRepository;
 import ch.heigvd.dto.EventDTO;
+import ch.heigvd.dto.EventProcessingResultDTO;
 import ch.heigvd.dto.ScriptEngineResultDTO;
 import ch.heigvd.models.Application;
 import ch.heigvd.models.Rule;
 import ch.heigvd.models.User;
 import ch.heigvd.scripting.rules.RuleEngine;
+import ch.heigvd.scripting.triggers.TriggerEngine;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -49,16 +51,17 @@ public class EventController {
 	})
 	@ApiParam(value = "The information of the new application", required = true)
 	@RequestMapping(method = RequestMethod.POST)
-	ScriptEngineResultDTO processEvent(@RequestAttribute("application") Application app, @Valid @RequestBody EventDTO event) throws Exception {
+	EventProcessingResultDTO processEvent(@RequestAttribute("application") Application app, @Valid @RequestBody EventDTO event) throws Exception {
 		User user = userRepository.findByAppUserIdAndApplicationId(event.getUserId(), app.getId());
 		if (user == null) {
 			userRepository.save(new User(applicationRepository.findById(app.getId()), event.getUserId()));
 		}
 
 		List<Rule> rules = ruleRepository.findMatching(app, event.getType());
-		try (RuleEngine engine = new RuleEngine(user, event, criterionRepository)) {
-			rules.forEach(engine::executeRule);
-			return engine.getResult();
+		try (RuleEngine ruleEngine = new RuleEngine(user, event, criterionRepository);
+		     TriggerEngine triggerEngine = new TriggerEngine()) {
+			rules.forEach(ruleEngine::executeRule);
+			return new EventProcessingResultDTO(ruleEngine.getResult(), triggerEngine.getResult());
 		}
 	}
 }
