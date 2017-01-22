@@ -15,7 +15,7 @@ public class Trigger {
 	@Column(name = "name", nullable = false)
 	private String name;
 
-	@Column(name = "expr", nullable = false)
+	@Column(name = "expr", nullable = false, columnDefinition="TEXT")
 	private String expr;
 
 	@OneToMany(cascade = CascadeType.ALL)

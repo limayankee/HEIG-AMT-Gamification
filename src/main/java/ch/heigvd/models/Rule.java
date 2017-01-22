@@ -16,7 +16,7 @@ public class Rule {
 	@Column(name = "eventType", nullable = false)
 	private String eventType;
 
-	@Column(name = "expr", nullable = false)
+	@Column(name = "expr", nullable = false, columnDefinition="TEXT")
 	private String expr;
 
 	@ManyToOne(fetch = FetchType.LAZY)
