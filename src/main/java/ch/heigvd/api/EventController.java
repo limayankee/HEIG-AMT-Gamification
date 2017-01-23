@@ -80,8 +80,10 @@ public class EventController {
 					                                          .map(TriggerCriteria::getCriterionName)
 					                                          .collect(Collectors.toSet());
 					missingCriteriaData.removeAll(updatedCriteriaNames);
-					List<Criterion> missing = criterionRepository.findByNameInSetForUser(missingCriteriaData, user.getId());
-					triggerEngine.loadCriteriaData(missing);
+					if (!missingCriteriaData.isEmpty()) {
+						List<Criterion> missing = criterionRepository.findByNameInSetForUser(missingCriteriaData, user.getId());
+						triggerEngine.loadCriteriaData(missing);
+					}
 					triggers.forEach(triggerEngine::executeTrigger);
 				}
 				return new EventProcessingResultDTO(ruleEngine.getResult(), triggerEngine.getResult());
