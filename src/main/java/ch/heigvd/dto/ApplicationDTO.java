@@ -11,6 +11,10 @@ public class ApplicationDTO
 
     private String name;
 
+    public ApplicationDTO(){
+
+    }
+
     private ApplicationDTO(int id, String name){
         this.id = id;
         this.name = name;
