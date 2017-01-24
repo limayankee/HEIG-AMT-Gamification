@@ -8,6 +8,7 @@ import ch.heigvd.scripting.rules.CriterionDelta;
 import ch.heigvd.scripting.rules.RuleEngine;
 import ch.heigvd.scripting.triggers.TriggerEngine;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,7 @@ public class EventController {
 	@Autowired
 	private TriggerRepository triggerRepository;
 
+	@ApiOperation(value = "Process gamified application events")
 	@RequestMapping(method = RequestMethod.POST)
 	EventProcessingResultDTO processEvent(@ApiIgnore @RequestAttribute("application") Application app,
 	                                      @Valid @RequestBody EventDTO event) throws Exception {
