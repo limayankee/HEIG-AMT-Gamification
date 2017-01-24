@@ -5,15 +5,10 @@ import ch.heigvd.Exception.NotFoundException;
 import ch.heigvd.dao.RuleRepository;
 import ch.heigvd.dto.RuleDTO;
 import ch.heigvd.models.Application;
-import ch.heigvd.models.Level;
 import ch.heigvd.models.Rule;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -27,52 +22,44 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/rules")
-@Api(value = "Rules", description = "CRUD on the rules")
+@Api(value = "Rules", description = "Rules management")
 @ApiResponses(value = {
         @ApiResponse(
                 code = 401,
                 message = "Full authentication is required to access this resource"
         )
 })
-public class RuleController
-{
+public class RuleController {
     @Autowired
     private RuleRepository ruleRepository;
 
     @ApiOperation(value = "Retrive all rules for current application.")
-
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
-                    message = "Successful operation.",
-                    response = RuleDTO.class,
-                    responseContainer = "List"
+                    message = "Successful operation."
             )
     })
-
     @RequestMapping(produces = {"application/json"}, method = RequestMethod.GET)
-    public List<RuleDTO> getRules(@RequestAttribute("application") Application app) {
+    public List<RuleDTO> getRules(@RequestAttribute("application") @ApiIgnore Application app) {
         return ruleRepository.findByApplication(app).stream().map(RuleDTO::fromRule).collect(Collectors.toList());
     }
 
-    @ApiOperation(value = "Retrieve a specific rule.")
 
+    @ApiOperation(value = "Retrieve a specific rule.")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
-                    message = "Successful operation.",
-                    response = Level.class
+                    message = "Successful operation."
             ),
             @ApiResponse(
                     code = 404,
-                    message = "Rule do not exist",
-                    response = Void.class
+                    message = "Rule does not exist"
             )
     })
-
-    @RequestMapping(method = RequestMethod.GET, value = "/{name}", produces = {"application/json"})
+    @RequestMapping(method = RequestMethod.GET, value = "/{ruleName}", produces = {"application/json"})
     public RuleDTO getRule(@ApiIgnore @RequestAttribute("application") Application app,
-                             @PathVariable("name") String name) {
+                             @ApiParam(required = true) @PathVariable("ruleName") String name) {
         Rule rule = ruleRepository.findByNameAndApplication(name, app);
 
         if(rule == null){
@@ -82,28 +69,21 @@ public class RuleController
         return RuleDTO.fromRule(rule);
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "Create a rule.")
-
     @ApiResponses(value = {
             @ApiResponse(
                     code = 201,
-                    message = "Successful operation.",
-                    response = Void.class
-            ),
-            @ApiResponse(
-                    code = 400,
-                    message = "Fields are missing",
-                    response = Void.class
+                    message = "Successful operation."
             ),
             @ApiResponse(
                     code = 409,
-                    message = "Rule already exists",
-                    response = Void.class
+                    message = "Rule already exists"
             )
     })
-
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity addRule(@RequestAttribute("application") Application app, @Valid @RequestBody RuleDTO input) {
+    public void addRule(@ApiIgnore @RequestAttribute("application") Application app,
+                                  @Valid @ApiParam(required = true, name = "rule") @RequestBody RuleDTO input) {
 
         Rule rule = ruleRepository.findByNameAndApplication(input.getName(), app);
 
@@ -114,38 +94,34 @@ public class RuleController
         rule = new Rule(input.getName(), input.getEventType(), input.getExpr(), app);
 
         ruleRepository.save(rule);
-
-        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @ApiOperation(value = "Update a specific rule.")
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiOperation(value = "Update a specific rule.")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 204,
-                    message = "Successful operation.",
-                    response = Void.class
+                    message = "Successful operation."
             ),
             @ApiResponse(
                     code = 404,
-                    message = "Rule do not exist",
-                    response = Void.class
+                    message = "Rule does not exist"
             ),
             @ApiResponse(
                     code = 400,
-                    message = "Fields are missing",
-                    response = Void.class
+                    message = "Fields are missing"
             )
     })
-
-    @RequestMapping(method = RequestMethod.PATCH, value = "/{name}", consumes = "application/json")
-    public ResponseEntity editRule(@RequestAttribute("application") Application app, @Valid @RequestBody RuleDTO input,
-                                   @PathVariable("name") String name) {
+    @RequestMapping(method = RequestMethod.PATCH, value = "/{ruleName}", consumes = "application/json")
+    public void editRule(@ApiIgnore @RequestAttribute("application") Application app,
+                                   @Valid @RequestBody @ApiParam(name = "rule", required = true) RuleDTO input,
+                                   @ApiParam(required = true) @PathVariable("ruleName") String name) {
 
         Rule rule = ruleRepository.findByNameAndApplication(name, app);
 
         if(rule == null){
-            throw new NotFoundException("Rule do not exist");
+            throw new NotFoundException("Rule does not exist");
         }
 
         Rule rulCmp = ruleRepository.findByNameAndApplication(input.getName(), app);
@@ -159,12 +135,11 @@ public class RuleController
         rule.setExpr(input.getExpr());
 
         ruleRepository.save(rule);
-
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @ApiOperation(value = "Delete a specific rule.")
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiOperation(value = "Delete a specific rule.")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 204,
@@ -173,22 +148,19 @@ public class RuleController
             ),
             @ApiResponse(
                     code = 404,
-                    message = "Rule do not exist",
+                    message = "Rule does not exist",
                     response = Void.class
             )
     })
-
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{name}")
-    public ResponseEntity deleteRule(@RequestAttribute("application") Application app,
-                                     @PathVariable("name") String name) {
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{ruleName}")
+    public void deleteRule(@ApiIgnore @RequestAttribute("application") Application app,
+                                     @ApiParam(required = true) @PathVariable("ruleName") String name) {
         Rule rule = ruleRepository.findByNameAndApplication(name, app);
 
         if(rule == null){
-            throw new NotFoundException("Rule do not exist");
+            throw new NotFoundException("Rule does not exist");
         }
 
         ruleRepository.delete(rule);
-
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
