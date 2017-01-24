@@ -9,7 +9,6 @@ import ch.heigvd.models.Level;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -23,7 +22,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/levels")
-@Api(value = "Levels", description = "CRUD on the levels")
+@Api(value = "Levels", description = "Level management")
 @ApiResponses(value = {
         @ApiResponse(
                 code = 401,
@@ -36,39 +35,31 @@ public class LevelController
     private LevelRepository levelRepository;
 
     @ApiOperation(value = "Retrive all levels for current application.")
-
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
-                    message = "Successful operation.",
-                    response = LevelDTO.class,
-                    responseContainer = "List"
+                    message = "Successful operation."
             )
     })
-
     @RequestMapping(produces = {"application/json"}, method = RequestMethod.GET)
-    public List<LevelDTO> getLevels(@RequestAttribute("application") Application app) {
+    public List<LevelDTO> getLevels(@RequestAttribute("application") @ApiIgnore Application app) {
         return levelRepository.findByApplication(app).stream().map(LevelDTO::fromLevel).collect(Collectors.toList());
     }
 
     @ApiOperation(value = "Retrieve a specific level.")
-
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
-                    message = "Successful operation.",
-                    response = Level.class
+                    message = "Successful operation."
             ),
             @ApiResponse(
                     code = 404,
-                    message = "Level do not exist",
-                    response = Void.class
+                    message = "Level do not exist"
             )
     })
-
-    @RequestMapping(method = RequestMethod.GET, value = "/{name}", produces = {"application/json"})
+    @RequestMapping(method = RequestMethod.GET, value = "/{levelName}", produces = {"application/json"})
     public LevelDTO getLevel(@ApiIgnore @RequestAttribute("application") Application app,
-                             @PathVariable("name") String name) {
+                             @PathVariable("levelName") @ApiParam(required = true) String name) {
         Level level = levelRepository.findByNameAndApplication(name, app);
 
         if(level == null){
@@ -78,28 +69,22 @@ public class LevelController
         return LevelDTO.fromLevel(level);
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "Create a level.")
-
     @ApiResponses(value = {
             @ApiResponse(
                     code = 201,
-                    message = "Successful operation.",
-                    response = Void.class
-            ),
-            @ApiResponse(
-                    code = 400,
-                    message = "Fields are missing",
-                    response = Void.class
+                    message = "Successful operation."
             ),
             @ApiResponse(
                     code = 409,
-                    message = "Level already exists",
-                    response = Void.class
+                    message = "Level already exists"
             )
     })
 
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity addLevel(@RequestAttribute("application") Application app, @Valid @RequestBody LevelDTO input) {
+    public void addLevel(@RequestAttribute("application") @ApiIgnore Application app,
+                                   @Valid @RequestBody @ApiParam(name = "level", required = true) LevelDTO input) {
 
         Level level = levelRepository.findByNameAndApplication(input.getName(), app);
 
@@ -110,12 +95,10 @@ public class LevelController
         level = new Level(input.getName(), input.getThreshold(), app);
 
         levelRepository.save(level);
-
-        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "Update a specific level.")
-
     @ApiResponses(value = {
             @ApiResponse(
                     code = 204,
@@ -126,17 +109,12 @@ public class LevelController
                     code = 404,
                     message = "Level do not exist",
                     response = Void.class
-            ),
-            @ApiResponse(
-                    code = 400,
-                    message = "Fields are missing",
-                    response = Void.class
             )
     })
-
-    @RequestMapping(method = RequestMethod.PATCH, value = "/{name}", consumes = "application/json")
-    public ResponseEntity editLevel(@RequestAttribute("application") Application app, @Valid @RequestBody LevelDTO input,
-                                   @PathVariable("name") String name) {
+    @RequestMapping(method = RequestMethod.PATCH, value = "/{levelName}", consumes = "application/json")
+    public void editLevel(@RequestAttribute("application") @ApiIgnore Application app,
+                                    @Valid @RequestBody @ApiParam(name = "level", required = true)  LevelDTO input,
+                                    @PathVariable("levelName")  String name) {
 
         Level level = levelRepository.findByNameAndApplication(name, app);
 
@@ -154,12 +132,10 @@ public class LevelController
         level.setThreshold(input.getThreshold());
 
         levelRepository.save(level);
-
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "Delete a specific level.")
-
     @ApiResponses(value = {
             @ApiResponse(
                     code = 204,
@@ -173,9 +149,9 @@ public class LevelController
             )
     })
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{name}")
-    public ResponseEntity deleteLevel(@RequestAttribute("application") Application app,
-                                     @PathVariable("name") String name) {
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{levelName}")
+    public void deleteLevel(@RequestAttribute("application") @ApiIgnore Application app,
+                                     @PathVariable("levelName") String name) {
         Level level = levelRepository.findByNameAndApplication(name, app);
 
         if(level == null){
@@ -183,7 +159,5 @@ public class LevelController
         }
 
         levelRepository.delete(level);
-
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

@@ -1,6 +1,5 @@
 package ch.heigvd.dto;
 
-import ch.heigvd.models.Rule;
 import ch.heigvd.models.Trigger;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -34,7 +33,7 @@ public class TriggerDTO {
 	}
 
 	public static TriggerDTO fromTrigger(Trigger trigger){
-		List<String> criteria = trigger.getTriggerCriterias().stream().map(tc -> {
+		List<String> criteria = trigger.getTriggerCriteria().stream().map(tc -> {
 			return tc.getCriterionName();
 		}).distinct().collect(Collectors.toList());
 		return new TriggerDTO(trigger.getName(), trigger.getExpr(), criteria);
