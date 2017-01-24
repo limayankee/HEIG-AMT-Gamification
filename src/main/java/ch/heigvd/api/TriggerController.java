@@ -68,5 +68,6 @@ public class TriggerController {
 		}
 
 		triggerRepository.delete(trigger);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }
