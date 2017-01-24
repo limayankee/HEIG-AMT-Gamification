@@ -81,7 +81,7 @@ public class EventController {
 					Set<String> updatedCriteriaNames = triggerEngine.updatedCriteriaNames();
 					List<Trigger> triggers = triggerRepository.findByCriterionName(updatedCriteriaNames);
 					Set<String> missingCriteriaData = triggers.stream()
-					                                          .map(Trigger::getTriggerCriterias)
+					                                          .map(Trigger::getTriggerCriteria)
 					                                          .flatMap(Set::stream)
 					                                          .map(TriggerCriteria::getCriterionName)
 					                                          .collect(Collectors.toSet());

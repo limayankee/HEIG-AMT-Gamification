@@ -24,7 +24,7 @@ public class Trigger {
 	private Application application;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "trigger")
-	private Set<TriggerCriteria> triggerCriterias = new HashSet<>();
+	private Set<TriggerCriteria> triggerCriteria = new HashSet<>();
 
 	public Trigger() {}
 	public Trigger(String name, String expr, Application application, List<String> criteria) {
@@ -36,7 +36,7 @@ public class Trigger {
 
 	public void setTriggerCriterias(List<String> criteria) {
 		for(String c: criteria) {
-			triggerCriterias.add(new TriggerCriteria(this, c));
+			triggerCriteria.add(new TriggerCriteria(this, c));
 		}
 	}
 
@@ -73,10 +73,10 @@ public class Trigger {
 	}
 
 	public Set<TriggerCriteria> getTriggerCriteria() {
-		return triggerCriterias;
+		return triggerCriteria;
 	}
 
 	public void setTriggerCriterias(Set<TriggerCriteria> triggerCriterias) {
-		this.triggerCriterias = triggerCriterias;
+		this.triggerCriteria = triggerCriterias;
 	}
 }
