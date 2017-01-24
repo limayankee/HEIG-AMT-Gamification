@@ -1,6 +1,10 @@
 package ch.heigvd.models;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "applications")
@@ -21,6 +25,22 @@ public class Application {
 
 	@Column(name = "role", nullable = false)
 	private String role;
+
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "application")
+	private Set<Badge> badges;
+
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "application")
+	private Set<Level> levels;
+
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "application")
+	private Set<Rule> rules;
+
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "application")
+	private Set<Trigger> triggers;
+
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "application")
+	private Set<User> users;
+
 
 	public Application() {
 	}
