@@ -6,18 +6,18 @@ import ch.heigvd.dao.TriggerRepository;
 import ch.heigvd.dto.TriggerDTO;
 import ch.heigvd.models.Application;
 import ch.heigvd.models.Trigger;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@Api(value = "Triggers", description = "Triggers management")
 @RequestMapping(value = "/triggers", consumes = "application/json")
 @ApiResponses(value = {
 		@ApiResponse(
@@ -30,26 +30,54 @@ public class TriggerController {
 	@Autowired
 	private TriggerRepository triggerRepository;
 
+
+	@ApiOperation(value = "Fetch the triggers list")
 	@RequestMapping(produces = {"application/json"}, method = RequestMethod.GET)
-	public List<TriggerDTO> getTriggers(@RequestAttribute("application") Application app) {
+	public List<TriggerDTO> getTriggers(@ApiIgnore @RequestAttribute("application") Application app) {
 		return triggerRepository.findByApplication(app).stream().map(TriggerDTO::fromTrigger).collect(Collectors.toList());
 	}
 
+
+	@ResponseStatus(HttpStatus.CREATED)
+	@ApiOperation(value = "Add a trigger")
+	@ApiResponses(value = {
+			@ApiResponse(
+					code = 201,
+					message = "Successful operation"
+			),
+			@ApiResponse(
+					code = 409,
+					message = "Trigger already exist"
+			)
+	})
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity addTrigger(@RequestAttribute("application") Application app, @Valid @RequestBody TriggerDTO input) {
+	public void addTrigger(@ApiIgnore @RequestAttribute("application") Application app,
+						   @ApiParam(name = "trigger", required = true) @Valid @RequestBody TriggerDTO input) {
 		Trigger trigger = triggerRepository.findByNameAndApplication(input.getName(), app);
 		if(trigger != null){
 			throw new ConflictException("Trigger already exists");
 		}
 		trigger = new Trigger(input.getName(), trigger.getExpr(), app, input.getCriteria());
 		triggerRepository.save(trigger);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
-	@RequestMapping(method = RequestMethod.PATCH, value = "/{name}", consumes = "application/json")
-	public ResponseEntity editTrigger(@RequestAttribute("application") Application app,
-	                                  @Valid @RequestBody TriggerDTO input,
-	                                  @PathVariable("name") String name) {
+
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@ApiOperation(value = "Add a trigger")
+	@ApiResponses(value = {
+			@ApiResponse(
+					code = 204,
+					message = "Successful operation"
+			),
+			@ApiResponse(
+					code = 409,
+					message = "Trigger already exist"
+			)
+	})
+	@RequestMapping(method = RequestMethod.PATCH, value = "/{triggerName}", consumes = "application/json")
+	public void editTrigger(@ApiIgnore @RequestAttribute("application") Application app,
+	                                  @ApiParam(name = "trigger", required = true) @Valid @RequestBody TriggerDTO input,
+	                                  @PathVariable("triggerName") String name) {
 		Trigger trigger = triggerRepository.findByNameAndApplication(name, app);
 		if(trigger == null){
 			throw new NotFoundException("Trigger do not exist");
@@ -64,18 +92,29 @@ public class TriggerController {
 		trigger.setTriggerCriterias(input.getCriteria());
 
 		triggerRepository.save(trigger);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
-	@RequestMapping(method = RequestMethod.DELETE, value="/{name}")
-	public ResponseEntity deleteTrigger(@RequestAttribute("application") Application app,
-	                                    @PathVariable("name") String name) {
+
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@ApiOperation(value = "Remove a trigger")
+	@ApiResponses(value = {
+			@ApiResponse(
+					code = 204,
+					message = "Successful operation"
+			),
+			@ApiResponse(
+					code = 404,
+					message = "Trigger do not exist"
+			)
+	})
+	@RequestMapping(method = RequestMethod.DELETE, value="/{triggerName}")
+	public void deleteTrigger(@ApiIgnore @RequestAttribute("application") Application app,
+	                                    @PathVariable("triggerName") String name) {
 		Trigger trigger = triggerRepository.findByNameAndApplication(name, app);
 		if(trigger == null){
 			throw new NotFoundException("Trigger do not exist");
 		}
 
 		triggerRepository.delete(trigger);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }
