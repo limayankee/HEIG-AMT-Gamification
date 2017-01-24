@@ -17,14 +17,34 @@ The team is composed by [Bastien Clément](https://github.com/galedric), [Julien
 
 Rules and Triggers are defined using JavaScript code. This section describes variables and functions exposed to user code.
 
-In both Rule and Trigger API, the user code can use any standard object defined by ECMAScript standard like `String`, `Math`, `Array`, `Date`, etc. In addition, the `trace(text: string)` function can be used to add a line in the `trace` array returned by the `/events` endpoint.
+In both Rules and Triggers API, the user code can use any standard object defined by ECMAScript standard like `String`, `Math`, `Array`, `Date`, etc. 
 
-### Rule API
+In addition, the following functions are available:
+
+ * `trace(text: string)`: Appends an entry to the `trace` array returned by the `/events` endpoint.
+ * `award(badge: string, count: number)`: Bypass the trigger mechanism and awards `count` instances of the badge to the user.
+
+### Rules API
 
 Rules have access to the `payload` variable containing the same value that the `payload` field of the given event object.
 
-Additonnaly, the following functions are available:
+Additionally, the following functions are available:
+
  * `reset(criterion: string, value: number)`: Resets a criterion to the given value
  * `increment(criterion: string, delta: number)`: Increments the criterion by the given amount of units
  * `decrement(criterion: string, delta: number)`: Same as `increment`, but using negative `delta`
- * `award(badge: string, count: number)`: Bypass the trigger mechanism and awards `count` instances of the badge to the user.
+
+ 
+ ### Triggers API
+ 
+Triggers can use the `criteria` variable to access criteria values and decide which actions to perform.
+
+For each criterion registered with the trigger, an object describing changes made to the criterion will be avaible in the `criteria` object. Each entry will contain the following fields:
+
+ * `old`: the old value of the criterion, before rules executions.
+ * `value`: the current value of the criterion
+ * `delta`: `value - old`
+
+For example, `criteria["foo"].value` is the current value of the "foo" criterion.
+
+The Triggers API does not define any additionnal functions. The shared `award` function can be used to award badges to users.
