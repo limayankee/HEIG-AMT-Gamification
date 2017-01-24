@@ -23,6 +23,12 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/users")
 @Api(value = "Users", description = "CRUD on the users")
+@ApiResponses(value = {
+		@ApiResponse(
+				code = 401,
+				message = "Full authentication is required to access this resource"
+		)
+})
 public class UserController {
 
 	@Autowired

@@ -32,6 +32,7 @@ public class SwaggerConfig {
                 .apis(RequestHandlerSelectors.basePackage("ch.heigvd.api"))
                 .paths(PathSelectors.ant("/**"))
                 .build()
-                .apiInfo(apiInfo());
+                .apiInfo(apiInfo())
+                .useDefaultResponseMessages(false);
     }
 }

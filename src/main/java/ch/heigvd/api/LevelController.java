@@ -24,6 +24,12 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/levels")
 @Api(value = "Levels", description = "CRUD on the levels")
+@ApiResponses(value = {
+        @ApiResponse(
+                code = 401,
+                message = "Full authentication is required to access this resource"
+        )
+})
 public class LevelController
 {
     @Autowired

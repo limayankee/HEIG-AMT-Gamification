@@ -28,6 +28,12 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/rules")
 @Api(value = "Rules", description = "CRUD on the rules")
+@ApiResponses(value = {
+        @ApiResponse(
+                code = 401,
+                message = "Full authentication is required to access this resource"
+        )
+})
 public class RuleController
 {
     @Autowired

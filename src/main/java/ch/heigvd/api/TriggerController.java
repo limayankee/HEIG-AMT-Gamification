@@ -6,6 +6,8 @@ import ch.heigvd.dao.TriggerRepository;
 import ch.heigvd.dto.TriggerDTO;
 import ch.heigvd.models.Application;
 import ch.heigvd.models.Trigger;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,12 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/triggers", consumes = "application/json")
+@ApiResponses(value = {
+		@ApiResponse(
+				code = 401,
+				message = "Full authentication is required to access this resource"
+		)
+})
 public class TriggerController {
 
 	@Autowired

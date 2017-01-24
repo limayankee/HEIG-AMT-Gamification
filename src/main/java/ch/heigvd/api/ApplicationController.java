@@ -1,12 +1,10 @@
 package ch.heigvd.api;
 
 import ch.heigvd.Exception.ConflictException;
-import ch.heigvd.Exception.NotFoundException;
 import ch.heigvd.dao.ApplicationRepository;
 import ch.heigvd.dto.ApplicationDTO;
 import ch.heigvd.dto.ApplicationRegisterDTO;
 import ch.heigvd.models.Application;
-import ch.heigvd.models.Level;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -22,24 +20,24 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/applications")
-@Api(value = "auth", description = "the auth API")
+@Api(value = "applications", description = "Applications management")
 public class ApplicationController {
+
 	@Autowired
 	private ApplicationRepository applicationRepository;
 
+	@ResponseStatus(HttpStatus.CREATED)
 	@ApiResponses(value = {
 			@ApiResponse(
 					code = 201,
-					message = "Successful operation.",
+					message = "Application successfully created",
 					response = ApplicationDTO.class
 			),
 			@ApiResponse(
 					code = 409,
-					message = "Application already registered",
-					response = Void.class
-			)
+					message = "Application already registered"
+            )
 	})
-
 	@RequestMapping(produces = {"application/json"}, method = RequestMethod.POST)
 	@ApiParam(value = "The information of the new application", required = true)
 	public ApplicationDTO post(@RequestBody ApplicationRegisterDTO input) {
@@ -55,6 +53,22 @@ public class ApplicationController {
 		return ApplicationDTO.fromApplication(app);
 	}
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiResponses(value = {
+			@ApiResponse(
+					code = 204,
+					message = "Application successfully removed",
+					response = ApplicationDTO.class
+			),
+			@ApiResponse(
+					code = 409,
+					message = "Application already registered"
+			),
+            @ApiResponse(
+                    code = 401,
+                    message = "Full authentication is required to access this resource"
+            )
+	})
 	@RequestMapping(method = RequestMethod.DELETE)
 	public ResponseEntity delete(@RequestAttribute("application") Application app) {
 		applicationRepository.delete(app);

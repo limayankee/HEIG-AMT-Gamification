@@ -22,6 +22,12 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/events", consumes = "application/json")
+@ApiResponses(value = {
+		@ApiResponse(
+				code = 401,
+				message = "Full authentication is required to access this resource"
+		)
+})
 public class EventController {
 
 	@Autowired
