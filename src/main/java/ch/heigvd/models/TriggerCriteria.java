@@ -18,6 +18,12 @@ public class TriggerCriteria {
 	@Column(name = "criterion_name", nullable = false)
 	private String criterionName;
 
+	public TriggerCriteria(){}
+	public TriggerCriteria(Trigger trigger, String criterionName) {
+		this.trigger = trigger;
+		this.criterionName = criterionName;
+	}
+
 	public Trigger getTrigger() {
 		return trigger;
 	}

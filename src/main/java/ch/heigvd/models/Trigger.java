@@ -2,6 +2,7 @@ package ch.heigvd.models;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -26,10 +27,17 @@ public class Trigger {
 	private Set<TriggerCriteria> triggerCriterias = new HashSet<>();
 
 	public Trigger() {}
-	public Trigger(String name, String expr, Application application) {
+	public Trigger(String name, String expr, Application application, List<String> criteria) {
 		this.name = name;
 		this.expr = expr;
 		this.application = application;
+		setTriggerCriterias(criteria);
+	}
+
+	public void setTriggerCriterias(List<String> criteria) {
+		for(String c: criteria) {
+			triggerCriterias.add(new TriggerCriteria(this, c));
+		}
 	}
 
 	public int getId() {
@@ -64,7 +72,7 @@ public class Trigger {
 		this.application = application;
 	}
 
-	public Set<TriggerCriteria> getTriggerCriterias() {
+	public Set<TriggerCriteria> getTriggerCriteria() {
 		return triggerCriterias;
 	}
 
