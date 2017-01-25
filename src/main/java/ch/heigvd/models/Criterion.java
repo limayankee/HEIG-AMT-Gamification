@@ -17,7 +17,7 @@ public class Criterion {
 	@ManyToOne
 	private User user;
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	private Application application;
 
 	@Column(name = "value", nullable = false)
@@ -45,6 +45,14 @@ public class Criterion {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	public void setApplication(Application application){
+		this.application = application;
+	}
+
+	public Application getApplication(){
+		return application;
 	}
 
 	public int getValue() {

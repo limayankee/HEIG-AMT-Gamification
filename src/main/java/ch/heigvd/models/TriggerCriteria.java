@@ -12,7 +12,7 @@ public class TriggerCriteria {
 	private int id;
 
 	@ManyToOne
-	@JoinColumn(name = "triggerId")
+	@JoinColumn(name = "trigger_id")
 	private Trigger trigger;
 
 	@Column(name = "criterion_name", nullable = false)

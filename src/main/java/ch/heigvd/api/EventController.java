@@ -69,6 +69,7 @@ public class EventController {
 			try (TriggerEngine triggerEngine = new TriggerEngine(app, user, updatedCriteria, badgeRepository, userBadgeRepository)) {
 				if (!updatedCriteria.isEmpty()) {
 					Set<String> updatedCriteriaNames = triggerEngine.updatedCriteriaNames();
+
 					List<Trigger> triggers = triggerRepository.findByCriterionName(updatedCriteriaNames);
 					Set<String> missingCriteriaData = triggers.stream()
 					                                          .map(Trigger::getTriggerCriteria)

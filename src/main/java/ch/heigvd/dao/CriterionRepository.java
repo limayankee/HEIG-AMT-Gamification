@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 public interface CriterionRepository extends CrudRepository<Criterion, Integer> {
-	Criterion findByNameAndUserId(String name, int userId);
+	Criterion findByNameAndUser(String name, User user);
 
 	@Query("select distinct c from Criterion c where c.name in (?1) and c.user = ?2")
 	List<Criterion> findByNameInSetForUser(Set<String> criteria, User user);

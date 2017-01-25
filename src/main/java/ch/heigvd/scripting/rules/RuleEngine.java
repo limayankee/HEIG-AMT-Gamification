@@ -70,12 +70,13 @@ public class RuleEngine extends BadgeAwardingEngine {
 		if (updatedCriteria.containsKey(name)) {
 			return updatedCriteria.get(name).getCriterion();
 		} else {
-			Criterion criterion = criterionRepository.findByNameAndUserId(name, user.getId());
+			Criterion criterion = criterionRepository.findByNameAndUser(name, user);
 			if (criterion == null) {
 				criterion = new Criterion();
 				criterion.setName(name);
 				criterion.setUser(user);
 				criterion.setValue(0);
+				criterion.setApplication(app);
 			}
 			updatedCriteria.put(name, CriterionDelta.fromCriterion(criterion));
 			return criterion;

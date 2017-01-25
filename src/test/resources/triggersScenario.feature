@@ -33,7 +33,7 @@ Feature: The client can create an application
     Then The client should get a response with HTTP status code 201
     Examples:
       | expr                                                          | name        |
-      | if(criteria["mockCriterion"].value >= 10){award("mockBadge")} | mockTrigger |
+      | if(criteria["mockCriterion"].value >= 10){award("mockBadge", 1);} | mockTrigger |
 
   Scenario Outline: The client creates a rule
     Given The client use the name <name>, the eventT type <eventType> and the expression <expr>
@@ -41,7 +41,7 @@ Feature: The client can create an application
     Then The client should get a response with HTTP status code 201
     Examples:
       | name        | eventType     | expr                        |
-      | triggerRule | mockEventType | increment("mockCriterion"); |
+      | triggerRule | mockEventType | increment("mockCriterion", 1); |
 
   Scenario Outline: The client creates a new event
     Given The client use the type <type>, the user id <userId> and the item <item>
@@ -68,5 +68,3 @@ Feature: The client can create an application
     Examples:
       | name    | pwd     |
       | pollcat | pollcat |
-
-
