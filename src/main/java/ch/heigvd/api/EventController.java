@@ -77,7 +77,7 @@ public class EventController {
 					                                          .collect(Collectors.toSet());
 					missingCriteriaData.removeAll(updatedCriteriaNames);
 					if (!missingCriteriaData.isEmpty()) {
-						List<Criterion> missing = criterionRepository.findByNameInSetForUser(missingCriteriaData, user.getId());
+						List<Criterion> missing = criterionRepository.findByNameInSetForUser(missingCriteriaData, user);
 						triggerEngine.loadCriteriaData(missing);
 					}
 					triggers.forEach(triggerEngine::executeTrigger);

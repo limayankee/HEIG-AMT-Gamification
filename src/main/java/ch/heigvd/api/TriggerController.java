@@ -57,7 +57,7 @@ public class TriggerController {
 		if(trigger != null){
 			throw new ConflictException("Trigger already exists");
 		}
-		trigger = new Trigger(input.getName(), trigger.getExpr(), app, input.getCriteria());
+		trigger = new Trigger(input.getName(), input.getExpr(), app, input.getCriteria());
 		triggerRepository.save(trigger);
 	}
 

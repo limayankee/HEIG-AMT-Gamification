@@ -1,7 +1,6 @@
 package ch.heigvd.models;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
 @Table(name = "criteria")
@@ -15,8 +14,11 @@ public class Criterion {
 	@Column(name = "name", nullable = false)
 	private String name;
 
-	@Column(name = "userId", nullable = false)
-	private int userId;
+	@ManyToOne
+	private User user;
+
+	@ManyToOne(cascade = CascadeType.ALL)
+	private Application application;
 
 	@Column(name = "value", nullable = false)
 	private int value;
@@ -37,12 +39,12 @@ public class Criterion {
 		this.name = name;
 	}
 
-	public int getUserId() {
-		return userId;
+	public User getUser() {
+		return user;
 	}
 
-	public void setUserId(int userId) {
-		this.userId = userId;
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 	public int getValue() {

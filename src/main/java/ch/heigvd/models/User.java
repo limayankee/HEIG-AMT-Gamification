@@ -22,6 +22,9 @@ public class User {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pk.user")
 	private Set<UserBadge> userBadges = new HashSet<UserBadge>();
 
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+	private Set<Criterion> criteria = new HashSet<Criterion>();
+
 
 	public User() {}
 

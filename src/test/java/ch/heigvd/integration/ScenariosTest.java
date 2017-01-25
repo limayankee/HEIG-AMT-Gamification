@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration
-public class RulesScenarioTest {
+public class ScenariosTest {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
@@ -44,6 +44,7 @@ public class RulesScenarioTest {
 	private String expr;
 	private String userId;
 	private int item;
+	private List<String> criteria;
 
 
 	@Given("^The client use the name (.+) and the password (.+)$")
@@ -132,6 +133,24 @@ public class RulesScenarioTest {
 		restTemplate = restTemplate.withBasicAuth(username, pwd);
 		List<BadgeDTO> badges = restTemplate.getForObject("/users/{name}", UserDTO.class, userId).getBadges();
 		assertEquals(nb, badges.size());
+	}
+
+	@Given("^The client create the trigger with the criteria$")
+	public void use_criteria(List<String> criteria) {
+		this.criteria = criteria;
+	}
+
+	@Given("^The client use the expression (.+) and the name (.+)$")
+	public void use_name_expr(String expr, String name) {
+		this.name = name;
+		this.expr = expr;
+	}
+
+	@When("^The client calls /triggers")
+	public void calls_triggers() {
+		TriggerDTO dto = new TriggerDTO(name, expr, criteria);
+		restTemplate = restTemplate.withBasicAuth(username, pwd);
+		response = restTemplate.postForEntity("/triggers", dto, Void.class);
 	}
 
 	@Given("^The client calls DELETE on /applications$")

@@ -74,7 +74,7 @@ public class RuleEngine extends BadgeAwardingEngine {
 			if (criterion == null) {
 				criterion = new Criterion();
 				criterion.setName(name);
-				criterion.setUserId(user.getId());
+				criterion.setUser(user);
 				criterion.setValue(0);
 			}
 			updatedCriteria.put(name, CriterionDelta.fromCriterion(criterion));
