@@ -8,7 +8,8 @@ import org.junit.runner.RunWith;
  * Created by matthieu.villard on 24.01.2017.
  */
 @RunWith(Cucumber.class)
-@CucumberOptions(features = "src/test/resources")
+@CucumberOptions(features = "src/test/resources", format = { "pretty", "html:target/cucumber" })
 public class GamificationTest {
+
 
 }
