@@ -9,9 +9,14 @@ The team is composed by [Bastien Clément](https://github.com/galedric), [Julien
 - Docker-compose **1.10.0**
 
 ## Instructions
-- Clone the repo
-- Run the following command: `docker-compose up`
+- Clone the repo and cd into it
+- Build the docker image: `docker build -t gamecat .`
+- Run the docker container: `docker run -p 8080:8080 gamecat` 
+ (adapt the port binding if needed, the internal port is *8080*)
 - The app is now running on [http://localhost:8080](http://localhost:8080)
+
+## Example of gamified application
+We gamified the Poll-Cat application (made within the TWEB course). You can find the code on the gamification branch of the repository, [here](https://github.com/pikkle/poll-cat/tree/gamification).
 
 ## JavaScript APIs
 
