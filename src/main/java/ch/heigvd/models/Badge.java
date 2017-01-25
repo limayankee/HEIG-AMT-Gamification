@@ -1,6 +1,8 @@
 package ch.heigvd.models;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "badges")
@@ -25,6 +27,9 @@ public class Badge {
 
 	@Column(name = "repeatable", nullable = false)
 	private boolean repeatable;
+
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pk.badge")
+	private Set<UserBadge> userBadges = new HashSet<UserBadge>();
 
 	public Badge() {}
 	public Badge(String name, String image, int points, boolean repeatable, Application application)

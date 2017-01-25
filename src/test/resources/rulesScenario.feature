@@ -33,18 +33,19 @@ Feature: The client can create an application
       | bestRule  | mockEventType | if(payload["item"] == 0){award("mockBadge", 1);}|
 
   Scenario Outline: The client creates a new event
-    Given The client use the type <type>, the user id <userId> and the payload <paylod>
+    Given The client use the type <type>, the user id <userId> and the item <item>
     When The client calls /events
     Then The client should get a response with HTTP status code 200
     And The user should have 1 badge(s)
     Examples:
-      | type          | userId | paylod     |
-      | mockEventType | john   | {"item":0} |
+      | type          | userId | item |
+      | mockEventType | john   | 0    |
 
   Scenario Outline: The client delete the application
+    Given The client use the name <name> and the password <pwd>
     When The client calls DELETE on /applications
     Then The client should get a response with HTTP status code 204
     Examples:
-      |_|
-      |_|
+      | name    | pwd     |
+      | pollcat | pollcat |
 

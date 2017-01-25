@@ -43,7 +43,7 @@ public class RulesScenarioTest {
 	private String eventType;
 	private String expr;
 	private String userId;
-	private String payload;
+	private int item;
 
 
 	@Given("^The client use the name (.+) and the password (.+)$")
@@ -110,16 +110,18 @@ public class RulesScenarioTest {
 		response = restTemplate.postForEntity("/rules", dto, Void.class);
 	}
 
-	@Given("^The client use the type (.+), the user id (.+) and the payload (.+)$")
-	public void use_type_userId_payload(String eventType, String userId, String payload) {
+	@Given("^The client use the type (.+), the user id (.+) and the item (.+)$")
+	public void use_type_userId_payload(String eventType, String userId, int item) {
 		this.eventType = eventType;
 		this.userId = userId;
-		this.payload = payload;
+		this.item = item;
 	}
 
 	@When("^The client calls /events$")
 	public void calls_events() {
-		EventDTO dto = new EventDTO(eventType, userId, payload);
+		JSONObject json = new JSONObject();
+		json.put("item", item);
+		EventDTO dto = new EventDTO(eventType, userId, json);
 
 		restTemplate = restTemplate.withBasicAuth(username, pwd);
 		response = restTemplate.postForEntity("/events", dto, Void.class);
@@ -128,11 +130,11 @@ public class RulesScenarioTest {
 	@And("^The user should have (\\d+) badge\\(s\\)$")
 	public void user_should_have_badge(int nb) throws Throwable {
 		restTemplate = restTemplate.withBasicAuth(username, pwd);
-		List<BadgeDTO> badges = restTemplate.getForObject("/users", UserDTO.class, userId).getBadges();
+		List<BadgeDTO> badges = restTemplate.getForObject("/users/{name}", UserDTO.class, userId).getBadges();
 		assertEquals(nb, badges.size());
 	}
 
-	@When("^The client calls DELETE on /applications$")
+	@Given("^The client calls DELETE on /applications$")
 	public void calls_delet_application() {
 		restTemplate = restTemplate.withBasicAuth(username, pwd);
 		HttpEntity<Void> entity = new HttpEntity<>(null, new HttpHeaders());
